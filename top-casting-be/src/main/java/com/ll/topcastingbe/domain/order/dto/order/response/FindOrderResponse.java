@@ -1,0 +1,1 @@
+package com.ll.topcastingbe.domain.order.dto.order.response;public record FindOrderResponse() {}
