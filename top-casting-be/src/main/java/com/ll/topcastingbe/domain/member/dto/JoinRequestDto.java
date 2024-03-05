@@ -33,5 +33,8 @@ public class JoinRequestDto {
     private String address;
 
     @NotNull
+    private String zipcode;
+
+    @NotNull
     private String phoneNumber;
 }

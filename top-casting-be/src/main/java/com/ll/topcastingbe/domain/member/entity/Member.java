@@ -1,5 +1,6 @@
 package com.ll.topcastingbe.domain.member.entity;
 
+import jakarta.persistence.Embedded;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
@@ -15,26 +16,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Member{
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+public class Member {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(nullable = false, unique = true)
-	private String username;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-	private String password;
+    private String password;
 
-	private String name;
+    private String name;
 
-	@Column(nullable = false, unique = true)
-	private String nickname;
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
-	@Column(nullable = false, unique = true)
-	private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-	private LocalDate birthDate;
-	private String address;
-	private String phoneNumber;
+    private LocalDate birthDate;
+
+    @Embedded
+    private Address address;
+
+    private String phoneNumber;
 
 }

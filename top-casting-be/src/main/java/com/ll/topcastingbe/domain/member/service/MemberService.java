@@ -1,6 +1,7 @@
 package com.ll.topcastingbe.domain.member.service;
 
 import com.ll.topcastingbe.domain.member.dto.JoinRequestDto;
+import com.ll.topcastingbe.domain.member.entity.Address;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.repository.MemberRepository;
 import java.util.Optional;
@@ -25,17 +26,22 @@ public class MemberService {
                 .nickname(joinRequestDto.getNickname())
                 .name(joinRequestDto.getName())
                 .email(joinRequestDto.getEmail())
-                .address(joinRequestDto.getAddress())
                 .birthDate(joinRequestDto.getBirthDate())
                 .phoneNumber(joinRequestDto.getPhoneNumber())
+                .address(Address.builder()
+                        .address(joinRequestDto.getAddress())
+                        .zipcode(joinRequestDto.getZipcode())
+                        .build())
                 .build();
 
         memberRepository.save(member);
     }
 
     public boolean checkNickname(String nickname) {
-        Optional<Member> om =  memberRepository.findByNickname(nickname);
-        if(om.isEmpty()) return false;
+        Optional<Member> om = memberRepository.findByNickname(nickname);
+        if (om.isEmpty()) {
+            return false;
+        }
         return true;
     }
 }
