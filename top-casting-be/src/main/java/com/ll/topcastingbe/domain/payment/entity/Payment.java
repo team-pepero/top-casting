@@ -39,9 +39,6 @@ public class Payment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Orders order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
-
     private String paymentKey;
 
     public UUID getOrderId() {
