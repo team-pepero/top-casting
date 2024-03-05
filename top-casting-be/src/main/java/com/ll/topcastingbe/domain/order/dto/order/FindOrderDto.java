@@ -1,1 +1,4 @@
-package com.ll.topcastingbe.domain.order.dto.order;public record FindOrderDto() {}
+package com.ll.topcastingbe.domain.order.dto.order;
+
+public record FindOrderDto() {
+}
