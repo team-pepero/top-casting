@@ -1,6 +1,8 @@
 package com.ll.topcastingbe.domain.order.entity;
 
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.order.exception.AuthException;
+import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,4 +48,10 @@ public class Orders extends BaseEntity {
     private Long totalItemQuantity;
 
     private Long totalItemPrice;
+
+    public void checkAuthorizedMember(final Member member) {
+        if (!Objects.equals(this.member, member)) {
+            throw new AuthException(ErrorMessage.UNAUTHORIZED_USER);
+        }
+    }
 }
