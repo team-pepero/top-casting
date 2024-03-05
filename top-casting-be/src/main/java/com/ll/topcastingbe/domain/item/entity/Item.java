@@ -1,4 +1,4 @@
-package com.ll.topcastingbe.domain.item.domain;
+package com.ll.topcastingbe.domain.item.entity;
 
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
