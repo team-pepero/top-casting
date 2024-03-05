@@ -11,7 +11,7 @@ public record AddTossPaymentResponse(UUID orderId,
                                      String customerAddress) {
 
     public static AddTossPaymentResponse of(final Payment payment) {
-        AddTossPaymentResponse addTossPaymentResponse = AddTossPaymentResponse.builder()
+        final AddTossPaymentResponse addTossPaymentResponse = AddTossPaymentResponse.builder()
                 .orderId(payment.getOrderId())
                 .price(payment.getPrice())
                 .customerAddress(payment.getCustomerAddress())
