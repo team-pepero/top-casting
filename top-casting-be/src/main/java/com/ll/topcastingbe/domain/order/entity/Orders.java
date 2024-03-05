@@ -1,6 +1,7 @@
 package com.ll.topcastingbe.domain.order.entity;
 
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
 import com.ll.topcastingbe.domain.order.exception.AuthException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.global.entity.BaseEntity;
@@ -53,5 +54,9 @@ public class Orders extends BaseEntity {
         if (!Objects.equals(this.member, member)) {
             throw new AuthException(ErrorMessage.UNAUTHORIZED_USER);
         }
+    }
+
+    public void modifyOrder(final ModifyOrderRequest modifyOrderRequest) {
+        this.orderStatus = OrderStatus.checkOrderStatus(modifyOrderRequest.orderStatus());
     }
 }
