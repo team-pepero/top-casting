@@ -10,8 +10,8 @@ import com.ll.topcastingbe.domain.order.entity.OrderItem;
 import com.ll.topcastingbe.domain.order.entity.Orders;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
+import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
 import com.ll.topcastingbe.domain.order.repository.order_item.OrderItemRepository;
-import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderItemServiceImpl implements OrderItemService {
     private final OptionRepository optionRepository;
     private final OrderItemRepository orderItemRepository;
-    private final OrderService orderService;
+    private final OrderRepository orderRepository;
 
     @Override
     @Transactional
@@ -52,7 +52,8 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public List<FindOrderItemResponse> findAllByOrderId(final UUID orderId, final Member member) {
-        final Orders order = orderService.findByOrderId(orderId);
+        final Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
         List<FindOrderItemResponse> orderItemResponses = FindOrderItemResponse.ofList(orderItems);
@@ -68,7 +69,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @Transactional
-    public void removeOrderItem(Long orderItemId, Member member) {
-
+    public void removeAllByOrderItem(final Orders order) {
+        orderItemRepository.removeAllByOrder(order);
     }
 }

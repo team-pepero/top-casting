@@ -18,5 +18,5 @@ public interface OrderItemService {
                          final ModifyOrderItemRequest modifyOrderItemRequest,
                          final Member member);
 
-    void removeOrderItem(final Long orderItemId, final Member member);
+    void removeAllByOrderItem(final Orders order);
 }
