@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,5 +62,14 @@ public class OrderController {
         List<FindOrderResponse> findOrderResponses = orderService.findOrderList(member);
         final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(findOrderResponses);
         return ResponseEntity.ok(findOrderDtos);
+    }
+
+    @PostAuthorize("isAuthenticated()")
+    @DeleteMapping("/order/{orderId}")
+    public ResponseEntity<List<FindOrderDto>> orderRemove(@PathVariable("orderId") final UUID orderId,
+                                                          @AuthenticationPrincipal final UserDetails userDetails) {
+        final Member member = memberService.findMember(userDetails.getUsername());
+        orderService.removeOrder(orderId, member);
+        return ResponseEntity.noContent().build();
     }
 }
