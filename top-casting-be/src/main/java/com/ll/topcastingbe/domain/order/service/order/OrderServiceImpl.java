@@ -68,8 +68,11 @@ public class OrderServiceImpl implements OrderService {
     
     //todo 주문 삭제 기능 보류
     @Override
-    public void removeOrder(UUID orderId, Member member) {
-
+    @Transactional
+    public void removeOrder(final UUID orderId, final Member member) {
+        final Orders order = findByOrderId(orderId);
+        order.checkAuthorizedMember(member);
+        orderRepository.delete(order);
     }
 
     @Override
