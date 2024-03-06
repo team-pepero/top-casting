@@ -5,14 +5,18 @@ import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
+import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,4 +42,13 @@ public class OrderController {
                 .body(addOrderResponseDto);
     }
 
+    @PostAuthorize("isAuthenticated()")
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<FindOrderDto> orderFind(@PathVariable("orderId") final UUID orderId,
+                                                  @AuthenticationPrincipal final UserDetails userDetails) {
+        final Member member = memberService.findMember(userDetails.getUsername());
+        final FindOrderDto findOrderDto = FindOrderDto.of(orderService.findOrder(orderId, member));
+
+        return ResponseEntity.ok(findOrderDto);
+    }
 }
