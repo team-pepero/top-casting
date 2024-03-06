@@ -12,7 +12,7 @@ public interface OrderItemService {
     void addOrderItem(final Orders order,
                       final AddOrderItemRequest addOrderItemRequest);
 
-    List<FindOrderItemResponse> findAllByOrderId(final UUID ordersId, final Member member);
+    List<FindOrderItemResponse> findAllByOrderId(final UUID orderId, final Member member);
 
     void updateOrderItem(final Long orderItemId,
                          final ModifyOrderItemRequest modifyOrderItemRequest,

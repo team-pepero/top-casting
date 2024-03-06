@@ -11,6 +11,7 @@ import com.ll.topcastingbe.domain.order.entity.Orders;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order_item.OrderItemRepository;
+import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderItemServiceImpl implements OrderItemService {
     private final OptionRepository optionRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderService orderService;
 
     @Override
     @Transactional
@@ -30,12 +32,8 @@ public class OrderItemServiceImpl implements OrderItemService {
         final Option option = optionRepository.findById(addOrderItemRequest.optionId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
 
-        final OrderItem orderItem = OrderItem.builder()
-                .order(order)
-                .option(option)
-                .itemQuantity(Long.valueOf(option.getStock()))
-                .totalPrice(getTotalPrice(option))
-                .build();
+        final OrderItem orderItem = OrderItem.builder().order(order).option(option)
+                .itemQuantity(Long.valueOf(option.getStock())).totalPrice(getTotalPrice(option)).build();
 
         orderItemRepository.save(orderItem);
     }
@@ -48,8 +46,13 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public List<FindOrderItemResponse> findAllByOrderId(UUID ordersId, Member member) {
-        return null;
+    public List<FindOrderItemResponse> findAllByOrderId(final UUID orderId, final Member member) {
+        final Orders order = orderService.findByOrderId(orderId);
+
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+        List<FindOrderItemResponse> orderItemResponses = FindOrderItemResponse.ofList(orderItems);
+
+        return orderItemResponses;
     }
 
     @Override
