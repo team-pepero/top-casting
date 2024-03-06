@@ -7,13 +7,15 @@ import lombok.Builder;
 @Builder
 public record FindOrderItemResponse(String itemName,
                                     Long itemQuantity,
-                                    Long totalPrice) {
+                                    Long totalPrice,
+                                    String itemImagePath) {
 
     public static FindOrderItemResponse of(final OrderItem orderItem) {
         final FindOrderItemResponse findOrderItemResponse = FindOrderItemResponse.builder()
                 .itemName(orderItem.getItemName())
                 .itemQuantity(orderItem.getItemQuantity())
                 .totalPrice(orderItem.getTotalPrice())
+                .itemImagePath(orderItem.getItemImagePath())
                 .build();
         return findOrderItemResponse;
     }
