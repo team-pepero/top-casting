@@ -32,15 +32,20 @@ public class OrderItemServiceImpl implements OrderItemService {
         final Option option = optionRepository.findById(addOrderItemRequest.optionId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
 
-        final OrderItem orderItem = OrderItem.builder().order(order).option(option)
-                .itemQuantity(Long.valueOf(option.getStock())).totalPrice(getTotalPrice(option)).build();
+        final OrderItem orderItem = OrderItem.builder()
+                .order(order)
+                .option(option)
+                .itemQuantity(addOrderItemRequest.itemQuantity())
+                .totalPrice(getTotalPrice(option, addOrderItemRequest)).build();
 
         orderItemRepository.save(orderItem);
     }
 
-    private Long getTotalPrice(final Option option) {
+    private Long getTotalPrice(final Option option, final AddOrderItemRequest addOrderItemRequest) {
         //todo 코드 더러움 수정 필요
-        final Long totalPrice = option.getItem().getItemPrice().longValue() * option.getStock();
+        final Long totalPrice =
+                option.getItem().getItemPrice().longValue() *
+                        addOrderItemRequest.itemQuantity();
 
         return totalPrice;
     }
