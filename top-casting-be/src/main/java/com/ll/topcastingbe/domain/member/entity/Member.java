@@ -23,24 +23,24 @@ public class Member {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true)
-	private String username;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-	private String password;
+    private String password;
 
-	private String name;
+    private String name;
 
-	@Column(nullable = false, unique = true)
-	private String nickname;
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
-	@Column(nullable = false, unique = true)
-	private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-	private LocalDate birthDate;
+    private LocalDate birthDate;
 
-	@Embedded
-	private Address address;
+    @Embedded
+    private Address address;
 
-	private String phoneNumber;
+    private String phoneNumber;
 
 }
