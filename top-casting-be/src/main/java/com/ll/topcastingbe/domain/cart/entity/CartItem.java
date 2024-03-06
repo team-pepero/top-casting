@@ -35,7 +35,6 @@ public class CartItem {
 
 	private int itemQuantity;
 
-
 	public CartItem(Cart cart, Option option, int itemQuantity) {
 		this.cart = cart;
 		this.option = option;
