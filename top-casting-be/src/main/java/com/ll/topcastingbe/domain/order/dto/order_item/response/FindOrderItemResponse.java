@@ -5,17 +5,20 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record FindOrderItemResponse(String itemName,
+public record FindOrderItemResponse(String itemImagePath,
+                                    String itemName,
+                                    String itemOption,
                                     Long itemQuantity,
-                                    Long totalPrice,
-                                    String itemImagePath) {
+                                    Long totalPrice
+) {
 
     public static FindOrderItemResponse of(final OrderItem orderItem) {
         final FindOrderItemResponse findOrderItemResponse = FindOrderItemResponse.builder()
+                .itemImagePath(orderItem.getItemImagePath())
                 .itemName(orderItem.getItemName())
+                .itemOption(orderItem.getOption().getColorName())
                 .itemQuantity(orderItem.getItemQuantity())
                 .totalPrice(orderItem.getTotalPrice())
-                .itemImagePath(orderItem.getItemImagePath())
                 .build();
         return findOrderItemResponse;
     }
