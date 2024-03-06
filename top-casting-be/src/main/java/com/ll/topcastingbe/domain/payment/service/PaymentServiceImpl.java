@@ -31,11 +31,9 @@ public class PaymentServiceImpl implements PaymentService {
     //
     @Override
     @Transactional
-    public AddTossPaymentResponse addPayment(UUID orderId, String paymentKey, Long price) {
+    public AddTossPaymentResponse addPayment(final UUID orderId, final String paymentKey, final Long price) {
         final Orders order = orderService.findByOrderId(orderId);
-        if (!Objects.equals(order.getTotalItemPrice(), price)) {
-            throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
-        }
+        checkOrderPrice(order, price);
         order.modifyOrderStatus(OrderStatus.SHIPPING);
 
         final Payment payment = createPayment(order, price, paymentKey);
@@ -78,6 +76,12 @@ public class PaymentServiceImpl implements PaymentService {
             throw new IllegalArgumentException("IoException");
         } catch (InterruptedException ie) {
             throw new IllegalArgumentException("InterruptedException ie");
+        }
+    }
+
+    private void checkOrderPrice(final Orders order, final Long price) {
+        if (!Objects.equals(order.getTotalItemPrice(), price)) {
+            throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
         }
     }
 }
