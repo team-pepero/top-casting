@@ -9,6 +9,7 @@ import com.ll.topcastingbe.domain.order.entity.Orders;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
+import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
+    private final OrderItemService orderItemService;
 
     @Override
     @Transactional
     public AddOrderResponse addOrder(final AddOrderRequest addOrderRequest, final Member member) {
         final Orders order = addOrderRequest.toOrder(member);
         orderRepository.save(order);
+
+        addOrderRequest.addOrderItemRequest().stream()
+                        .forEach(addOrderItemRequest -> {
+                            orderItemService.addOrderItem(order, addOrderItemRequest);
+                        });
 
         final AddOrderResponse addOrderResponse = AddOrderResponse.of(order);
         return addOrderResponse;
