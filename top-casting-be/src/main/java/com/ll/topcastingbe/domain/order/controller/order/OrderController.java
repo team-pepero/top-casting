@@ -6,9 +6,11 @@ import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
+import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,5 +52,14 @@ public class OrderController {
         final FindOrderDto findOrderDto = FindOrderDto.of(orderService.findOrder(orderId, member));
 
         return ResponseEntity.ok(findOrderDto);
+    }
+
+    @PostAuthorize("isAuthenticated")
+    @GetMapping("/orders")
+    public ResponseEntity<List<FindOrderDto>> orderFindAll(@AuthenticationPrincipal final UserDetails userDetails) {
+        final Member member = memberService.findMember(userDetails.getUsername());
+        List<FindOrderResponse> findOrderResponses = orderService.findOrderList(member);
+        final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(findOrderResponses);
+        return ResponseEntity.ok(findOrderDtos);
     }
 }

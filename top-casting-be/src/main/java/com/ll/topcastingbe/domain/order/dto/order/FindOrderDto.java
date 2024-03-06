@@ -2,6 +2,7 @@ package com.ll.topcastingbe.domain.order.dto.order;
 
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -27,5 +28,12 @@ public record FindOrderDto(UUID orderId,
                 .totalItemPrice(findOrderResponse.totalItemPrice())
                 .build();
         return findOrderDto;
+    }
+
+    public static List<FindOrderDto> ofList(final List<FindOrderResponse> findOrderResponses) {
+        final List<FindOrderDto> findOrderDtos = findOrderResponses.stream()
+                .map(FindOrderDto::of)
+                .toList();
+        return findOrderDtos;
     }
 }
