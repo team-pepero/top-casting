@@ -21,4 +21,6 @@ public interface OrderService {
     void removeOrder(final UUID orderId, final Member member);
 
     Orders findByOrderId(final UUID orderId);
+
+    void checkAuthorizedMemberList(final List<Orders> orders, final Member member);
 }
