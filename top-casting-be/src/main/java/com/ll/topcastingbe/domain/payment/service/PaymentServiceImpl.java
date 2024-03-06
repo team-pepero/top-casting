@@ -34,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     public AddTossPaymentResponse addPayment(UUID orderId, String paymentKey, Long price) {
         final Orders order = orderService.findByOrderId(orderId);
         if (!Objects.equals(order.getTotalItemPrice(), price)) {
-            throw new BusinessException(ErrorMessage.valueOf("임시메시지"));
+            throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
         }
         order.modifyOrderStatus(OrderStatus.SHIPPING);
 
