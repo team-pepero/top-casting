@@ -29,10 +29,7 @@ public class OrderServiceImpl implements OrderService {
         final Orders order = addOrderRequest.toOrder(member);
         orderRepository.save(order);
 
-        addOrderRequest.addOrderItemRequest().stream()
-                        .forEach(addOrderItemRequest -> {
-                            orderItemService.addOrderItem(order, addOrderItemRequest);
-                        });
+        addOrderItem(order, addOrderRequest);
 
         final AddOrderResponse addOrderResponse = AddOrderResponse.of(order);
         return addOrderResponse;
@@ -65,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
         order.modifyOrder(modifyOrderRequest);
     }
 
-    
+
     //todo 주문 삭제 기능 보류
     @Override
     @Transactional
@@ -80,5 +77,18 @@ public class OrderServiceImpl implements OrderService {
         final Orders order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
         return order;
+    }
+
+    @Override
+    public void checkAuthorizedMemberList(List<Orders> orders, Member member) {
+        orders.stream()
+                .forEach(order -> order.checkAuthorizedMember(member));
+    }
+
+    private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {
+        addOrderRequest.addOrderItemRequest().stream()
+                .forEach(addOrderItemRequest -> {
+                    orderItemService.addOrderItem(order, addOrderItemRequest);
+                });
     }
 }
