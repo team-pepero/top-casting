@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +24,7 @@ public class OrderItemController {
     private final MemberService memberService;
     private final OrderItemService orderItemService;
 
-    @PostAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/order-item/{orderId}")
     public ResponseEntity<List<FindOrderItemDto>> orderItemFindAll(@PathVariable("orderId") final UUID orderId,
                                                                    @AuthenticationPrincipal final UserDetails userDetails) {
