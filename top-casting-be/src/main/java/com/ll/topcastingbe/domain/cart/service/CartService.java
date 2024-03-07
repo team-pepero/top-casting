@@ -41,7 +41,7 @@ public class CartService {
         //카트안에 해당 상품이 없었다면 추가
         if (cartItem == null) {
             Option option = optionRepository.findById(optionId)
-                    .orElseThrow(() -> new OptionNotFoundException("해당 옵션의 상품을 찾을 수 없습니다."));
+                    .orElseThrow(() -> new OptionNotFoundException());
             cartItemRepository.save(new CartItem(cart, option, itemQuantity));
         } else {
             cartItem.changeItemQuantity(itemQuantity);
@@ -50,7 +50,7 @@ public class CartService {
 
     private Cart createCart(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException());
         log.info("장바구니를 생성합니다.");
         return cartRepository.save(new Cart(member));
     }
@@ -58,14 +58,19 @@ public class CartService {
     //장바구니에 있는 상품을 증감하는 경우
     @Transactional
     public void modifyCartItem(Long memberId, Long cartItemId, int itemQuantity) {
-        CartItem cartItem = cartItemRepository.findByIdWithMember(cartItemId)
-                .orElseThrow(() -> new CartItemNotExistException("장바구니에 해당 상품이 없습니다."));
-
-        if (!cartItem.getCart().getMember().getId().equals(memberId)) {
-            throw new UserAndWriterNotMatchException("해당 장바구니에 대한 수정 권한이 없습니다.");
-        }
+        CartItem cartItem = getCartItemAndValidateMember(memberId, cartItemId);
 
         cartItem.changeItemQuantity(itemQuantity);
+    }
+
+    private CartItem getCartItemAndValidateMember(Long memberId, Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findByIdWithMember(cartItemId)
+                .orElseThrow(() -> new CartItemNotExistException());
+
+        if (!cartItem.isMatched(memberId)) {
+            throw new UserAndWriterNotMatchException();
+        }
+        return cartItem;
     }
 
     public CartItemListResponseDto findCartItemList(Long memberId) {
@@ -75,12 +80,7 @@ public class CartService {
 
     @Transactional
     public void removeCartItem(Long memberId, Long cartItemId) {
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new CartItemNotExistException("장바구니에 해당 상품이 없습니다."));
-
-        if (!cartItem.getCart().getMember().getId().equals(memberId)) {
-            throw new UserAndWriterNotMatchException("해당 장바구니에 대한 삭제 권한이 없습니다.");
-        }
+        CartItem cartItem = getCartItemAndValidateMember(memberId, cartItemId);
 
         cartItemRepository.delete(cartItem);
     }

@@ -44,4 +44,8 @@ public class CartItem {
 	public void changeItemQuantity(int quantity) {
 		itemQuantity = quantity;
 	}
+
+	public boolean isMatched(Long memberId){
+		return this.getCart().getMember().getId().equals(memberId);
+	}
 }
