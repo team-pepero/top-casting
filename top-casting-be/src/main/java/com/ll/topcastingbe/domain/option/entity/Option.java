@@ -1,7 +1,6 @@
 package com.ll.topcastingbe.domain.option.entity;
 
-import com.ll.topcastingbe.domain.item.domain.Item;
-
+import com.ll.topcastingbe.domain.item.entity.Item;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
