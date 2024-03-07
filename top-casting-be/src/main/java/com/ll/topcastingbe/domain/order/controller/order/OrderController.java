@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +32,7 @@ public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
 
-    @PostAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/order")
     public ResponseEntity<AddOrderResponseDto> orderAdd(@Valid @RequestBody final AddOrderDto addOrderDto,
                                                         @AuthenticationPrincipal final UserDetails userDetails) {
@@ -45,7 +45,7 @@ public class OrderController {
                 .body(addOrderResponseDto);
     }
 
-    @PostAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/order/{orderId}")
     public ResponseEntity<FindOrderDto> orderFind(@PathVariable("orderId") final UUID orderId,
                                                   @AuthenticationPrincipal final UserDetails userDetails) {
@@ -55,7 +55,7 @@ public class OrderController {
         return ResponseEntity.ok(findOrderDto);
     }
 
-    @PostAuthorize("isAuthenticated")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/orders")
     public ResponseEntity<List<FindOrderDto>> orderFindAll(@AuthenticationPrincipal final UserDetails userDetails) {
         final Member member = memberService.findMember(userDetails.getUsername());
@@ -64,7 +64,7 @@ public class OrderController {
         return ResponseEntity.ok(findOrderDtos);
     }
 
-    @PostAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/order/{orderId}")
     public ResponseEntity<List<FindOrderDto>> orderRemove(@PathVariable("orderId") final UUID orderId,
                                                           @AuthenticationPrincipal final UserDetails userDetails) {
