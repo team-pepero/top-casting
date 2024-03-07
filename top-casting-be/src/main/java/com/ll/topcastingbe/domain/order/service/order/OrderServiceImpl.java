@@ -47,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<FindOrderResponse> findOrderList(final Member member) {
         final List<Orders> orders = orderRepository.findAllByMember(member);
-        checkAuthorizedMemberList(orders, member);
         final List<FindOrderResponse> findOrderResponseList = FindOrderResponse.ofList(orders);
 
         return findOrderResponseList;
