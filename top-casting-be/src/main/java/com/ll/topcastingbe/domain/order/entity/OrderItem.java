@@ -33,4 +33,12 @@ public class OrderItem {
     private Long totalPrice;
 
     private Long itemQuantity;
+
+    public String getItemName() {
+        return this.option.getItem().getItemName();
+    }
+
+    public String getItemImagePath() {
+        return this.option.getItem().getImage().getPath();
+    }
 }
