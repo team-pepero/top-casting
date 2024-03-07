@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Builder
 @AllArgsConstructor
+@Data
 public class ErrorResponseDto {
     private String code;
     private String message;
