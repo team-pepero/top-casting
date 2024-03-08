@@ -78,7 +78,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                         .verify(refreshToken);
             } catch (JWTVerificationException ee) {
                 //검증 실패시 uncheck
-                findRefreshToken.unchck();
+                findRefreshToken.uncheck();
                 chain.doFilter(request, response);
                 return;
             }
