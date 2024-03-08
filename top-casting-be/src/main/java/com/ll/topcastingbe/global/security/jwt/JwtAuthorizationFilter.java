@@ -57,6 +57,21 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         try {
             username = JWT.require(Algorithm.HMAC512(jwtProps.secretKey)).build()
                                .verify(accessToken).getClaim("username").asString();
+
+            if (username != null) {
+                Member findMember = memberRepository.findByUsername(username);
+
+                //권한 처리
+                PrincipalDetails principalDetails = new PrincipalDetails(findMember);
+
+                //인증처리를 하는 것이 아니기 때문에 password는 null처리 - username이 null이 아니면 이미 사용자가 인증된 것
+                //JWT 토큰 서명이 정상이면 Authentication객체를 만들어준다.
+                Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null,
+                        principalDetails.getAuthorities());
+
+                //권한 저장
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         } catch (JWTVerificationException e) {
             // JWTVerificationException은 JWT 검증 실패(만료, 유효하지 않은 서명 등) 시 발생
             Cookie[] cookies = request.getCookies();
@@ -83,35 +98,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 return;
             }
 
-            //새로운 accessToken
-            accessToken = JWT.create()
-                                  .withSubject(findRefreshToken.getUsername())
-                                  .withExpiresAt(new Date(
-                                          System.currentTimeMillis() + SecurityConstants.ACCESS_EXPIRATION_TIME))
-                                  .withClaim("username", findRefreshToken.getUsername())
-                                  .sign(Algorithm.HMAC512(jwtProps.secretKey));
-            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + accessToken);
-            Cookie RefreshCookie = new Cookie("RefreshToken", refreshToken);
-            Cookie AccessCookie = new Cookie("AccessToken", accessToken);
-            response.addCookie(AccessCookie);
-            response.addCookie(RefreshCookie);
+            String newAccessToken = JWT.create()
+                                       .withSubject(username)
+                                       .withExpiresAt(new Date(
+                                               System.currentTimeMillis() + SecurityConstants.ACCESS_EXPIRATION_TIME))
+                                       .withClaim("username", username)
+                                       .sign(Algorithm.HMAC512(jwtProps.secretKey));
+            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + newAccessToken);
 
         }
 
-        if (username != null) {
-            Member findMember = memberRepository.findByUsername(username);
 
-            //권한 처리
-            PrincipalDetails principalDetails = new PrincipalDetails(findMember);
-
-            //인증처리를 하는 것이 아니기 때문에 password는 null처리 - username이 null이 아니면 이미 사용자가 인증된 것
-            //JWT 토큰 서명이 정상이면 Authentication객체를 만들어준다.
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, null,
-                    principalDetails.getAuthorities());
-
-            //권한 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
         chain.doFilter(request, response);
     }
 }
