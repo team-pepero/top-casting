@@ -19,4 +19,6 @@ public interface OrderItemService {
                          final Member member);
 
     void removeAllByOrderItem(final Orders order);
+
+    List<FindOrderItemResponse> findAllByOrderIdForAdmin(final UUID orderId);
 }

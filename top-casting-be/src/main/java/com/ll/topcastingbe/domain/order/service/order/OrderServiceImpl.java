@@ -108,6 +108,19 @@ public class OrderServiceImpl implements OrderService {
                 .forEach(order -> order.checkAuthorizedMember(member));
     }
 
+    @Override
+    public List<FindOrderResponse> findOrderListForAdmin() {
+        final List<Orders> orders = orderRepository.findAll();
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderIdForAdmin(order.getId());
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+        }
+        return findOrderResponses;
+    }
+
 
     //주문 시트 초기화시 필요한 정보 생성
     @Override

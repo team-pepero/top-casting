@@ -73,6 +73,17 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
+    public List<FindOrderItemResponse> findAllByOrderIdForAdmin(final UUID orderId) {
+        final Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
+
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+        List<FindOrderItemResponse> orderItemResponses = FindOrderItemResponse.ofList(orderItems);
+
+        return orderItemResponses;
+    }
+
+    @Override
     @Transactional
     public void updateOrderItem(Long orderItemId, ModifyOrderItemRequest modifyOrderItemRequest, Member member) {
 

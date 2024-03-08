@@ -27,4 +27,6 @@ public interface OrderService {
     void checkAuthorizedMemberList(final List<Orders> orders, final Member member);
 
     OrderSheetInitResponse initOrderSheet(final OrderSheetInitRequest orderSheetInitRequest, final Member member);
+
+    List<FindOrderResponse> findOrderListForAdmin();
 }

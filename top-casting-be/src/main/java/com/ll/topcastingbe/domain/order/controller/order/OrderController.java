@@ -89,4 +89,11 @@ public class OrderController {
         return ResponseEntity.ok(orderSheetInitResponseDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/admin/orders")
+    public ResponseEntity<List<FindOrderDto>> orderFindAllForAdmin() {
+        final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(orderService.findOrderListForAdmin());
+        return ResponseEntity.ok(findOrderDtos);
+    }
+
 }
