@@ -6,6 +6,9 @@ import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
+import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitRequestDto;
+import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitResponseDto;
+import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import jakarta.validation.Valid;
@@ -72,4 +75,18 @@ public class OrderController {
         orderService.removeOrder(orderId, member);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/order-sheet")
+    public ResponseEntity<OrderSheetInitResponseDto> initSheet(
+            @RequestBody OrderSheetInitRequestDto orderSheetInitRequestDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        final Member member = memberService.findMember(userDetails.getUsername());
+        final OrderSheetInitRequest orderSheetInitRequest = orderSheetInitRequestDto.toOrderSheetRequest();
+        final OrderSheetInitResponseDto orderSheetInitResponseDto = OrderSheetInitResponseDto.of(
+                orderService.initOrderSheet(orderSheetInitRequest, member));
+
+        return ResponseEntity.ok(orderSheetInitResponseDto);
+    }
+
 }
