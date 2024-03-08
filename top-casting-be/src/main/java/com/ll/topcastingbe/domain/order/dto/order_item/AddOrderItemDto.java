@@ -4,12 +4,12 @@ import com.ll.topcastingbe.domain.order.dto.order_item.request.AddOrderItemReque
 import lombok.Builder;
 
 @Builder
-public record AddOrderItemDto(Long optionId,
+public record AddOrderItemDto(Long cartItemId,
                               Long itemQuantity) {
 
     public AddOrderItemRequest toOrderItemDto() {
         final AddOrderItemRequest addOrderItemRequest = AddOrderItemRequest.builder()
-                .optionId(optionId)
+                .cartItemId(cartItemId)
                 .itemQuantity(itemQuantity)
                 .build();
 

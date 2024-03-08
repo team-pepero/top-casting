@@ -1,5 +1,7 @@
 package com.ll.topcastingbe.domain.order.service.order_item;
 
+import com.ll.topcastingbe.domain.cart.entity.CartItem;
+import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.option.entity.Option;
 import com.ll.topcastingbe.domain.option.repository.OptionRepository;
@@ -25,12 +27,21 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OptionRepository optionRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Override
     @Transactional
+    //todo save가 두 번 호출되므로 정상적인지는 잘 모르겠음
     public void addOrderItem(Orders order, AddOrderItemRequest addOrderItemRequest) {
-        final Option option = optionRepository.findById(addOrderItemRequest.optionId())
+        final CartItem cartItem = cartItemRepository.findById(addOrderItemRequest.cartItemId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
+
+        final Option option = Option.builder()
+                .item(cartItem.getOption().getItem())
+                .colorName(cartItem.getOption().getColorName())
+                .stock(cartItem.getOption().getStock())
+                .build();
+        optionRepository.save(option);
 
         final OrderItem orderItem = OrderItem.builder()
                 .order(order)
