@@ -16,6 +16,7 @@ import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,12 +35,14 @@ public class PaymentServiceImpl implements PaymentService {
     public AddTossPaymentResponse addPayment(final UUID orderId, final String paymentKey, final Long price) {
         final Orders order = orderService.findByOrderId(orderId);
         checkOrderPrice(order, price);
-        order.modifyOrderStatus(OrderStatus.SHIPPING);
 
         final Payment payment = createPayment(order, price, paymentKey);
         paymentRepository.save(payment);
 
-        requestPaymentAccept(paymentKey, price, orderId);
+        int statusCode = requestPaymentAccept(paymentKey, price, orderId);
+        if (statusCode == HttpStatus.OK.value()) {
+            order.modifyOrderStatus(OrderStatus.SHIPPING);
+        }
 
         final AddTossPaymentResponse tossPaymentResponse = AddTossPaymentResponse.of(payment);
         return tossPaymentResponse;
@@ -54,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
-    private void requestPaymentAccept(final String paymentKey, final Long price, final UUID orderId) {
+    private int requestPaymentAccept(final String paymentKey, final Long price, final UUID orderId) {
         final URI apiUri = URI.create(tossPaymentConfig.getTossApiUri());
         final String requestBody = String.format(
                 "{\"paymentKey\":\"%s\",\"amount\":%d,\"orderId\":\"%s\"}",
@@ -66,12 +69,17 @@ public class PaymentServiceImpl implements PaymentService {
                 .header("Content-Type", tossPaymentConfig.getContentTypeHeader())
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
-        sendTossPaymentApproveRequest(request);
+        HttpResponse<String> httpResponse = sendTossPaymentApproveRequest(request);
+
+        int statusCode = httpResponse.statusCode();
+        return statusCode;
     }
 
-    private void sendTossPaymentApproveRequest(final HttpRequest request) {
+    private HttpResponse<String> sendTossPaymentApproveRequest(final HttpRequest request) {
         try {
-            HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> httpResponse = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            return httpResponse;
         } catch (IOException ioe) {
             throw new IllegalArgumentException("IoException");
         } catch (InterruptedException ie) {
