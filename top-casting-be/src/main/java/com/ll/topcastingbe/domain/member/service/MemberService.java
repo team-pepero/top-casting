@@ -1,5 +1,8 @@
 package com.ll.topcastingbe.domain.member.service;
 
+import com.ll.topcastingbe.domain.cart.entity.Cart;
+import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
+import com.ll.topcastingbe.domain.cart.repository.CartRepository;
 import com.ll.topcastingbe.domain.member.dto.JoinRequestDto;
 import com.ll.topcastingbe.domain.member.entity.Address;
 import com.ll.topcastingbe.domain.member.entity.Member;
@@ -19,6 +22,8 @@ public class MemberService {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Transactional
     public void join(JoinRequestDto joinRequestDto) {
@@ -70,9 +75,22 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException());
 
-        if (!passwordEncoder.matches(password,member.getPassword())) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new PasswordNotMatchException();
         }
         return member;
+    }
+
+    @Transactional
+    public void removeMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new UserNotFoundException());
+        //장바구니가 있다면 장바구니 먼저 삭제
+        Cart cart = cartRepository.findCartByMemberId(member.getId()).orElse(null);
+        if (cart != null) {
+            cartItemRepository.deleteCartItemByCartId(cart.getId());
+            cartRepository.delete(cart);
+        }
+        memberRepository.delete(member);
     }
 }

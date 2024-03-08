@@ -4,6 +4,7 @@ import java.util.List;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,4 +21,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
 	@Query("select ci from CartItem ci join fetch ci.cart c where ci.id = :cartItemId")
 	Optional<CartItem> findByIdWithMember(@Param("cartItemId")Long cartItemId);
+
+	@Modifying(clearAutomatically = true) //벌크연산수행 & 수행후 영속성 컨텍스트 초기화
+	@Query("delete from CartItem ci where ci.cart.id = :cartId")
+	int deleteCartItemByCartId(@Param("cartId") Long cartId);
 }
