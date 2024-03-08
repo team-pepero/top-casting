@@ -28,3 +28,6 @@ logging:
       hibernate:
         SQL: debug
         type: trace
+
+delivery:
+  fee: 2500

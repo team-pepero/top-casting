@@ -10,11 +10,11 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class SubCategory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_category_id")
-    private MainCategory parentCategory;
-    private String subcategoryName;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "main_category_id")
+	private MainCategory parentCategory;
+	private String subcategoryName;
 }
