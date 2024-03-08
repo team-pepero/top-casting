@@ -8,7 +8,9 @@ import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitRequestDto;
 import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitResponseDto;
+import com.ll.topcastingbe.domain.order.dto.order.RequestCancelOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
+import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import jakarta.validation.Valid;
@@ -22,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -88,6 +91,18 @@ public class OrderController {
 
         return ResponseEntity.ok(orderSheetInitResponseDto);
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/orders/{orderId}/refund")
+    public ResponseEntity<Void> cancelOrderRequest(@RequestBody final RequestCancelOrderDto requestCancelOrderDto,
+                                                   @PathVariable("orderId") final UUID orderId,
+                                                   @AuthenticationPrincipal final UserDetails userDetails) {
+        final Member member = memberService.findMember(userDetails.getUsername());
+        RequestCancelOrderRequest requestCancelOrderRequest = requestCancelOrderDto.toRequestCancelOrderRequest();
+        orderService.requestCancelOrder(orderId, requestCancelOrderRequest, member);
+        return ResponseEntity.ok().build();
+    }
+
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/admin/orders")

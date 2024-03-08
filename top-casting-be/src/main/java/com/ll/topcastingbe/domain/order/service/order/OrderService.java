@@ -4,6 +4,7 @@ import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
+import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetInitResponse;
@@ -27,6 +28,9 @@ public interface OrderService {
     void checkAuthorizedMemberList(final List<Orders> orders, final Member member);
 
     OrderSheetInitResponse initOrderSheet(final OrderSheetInitRequest orderSheetInitRequest, final Member member);
+
+    void requestCancelOrder(final UUID orderId, final RequestCancelOrderRequest requestCancelOrderRequest,
+                            final Member member);
 
     List<FindOrderResponse> findOrderListForAdmin();
 }

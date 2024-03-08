@@ -7,11 +7,13 @@ import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetItemInitRequest;
+import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetInitResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetItemInitResponse;
 import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
+import com.ll.topcastingbe.domain.order.entity.OrderStatus;
 import com.ll.topcastingbe.domain.order.entity.Orders;
 import com.ll.topcastingbe.domain.order.exception.BusinessException;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
@@ -119,6 +121,20 @@ public class OrderServiceImpl implements OrderService {
             findOrderResponses.add(findOrderResponse);
         }
         return findOrderResponses;
+    }
+
+    @Override
+    @Transactional
+    public void requestCancelOrder(final UUID orderId,
+                                   final RequestCancelOrderRequest requestCancelOrderRequest,
+                                   final Member member) {
+        final OrderStatus orderStatus = OrderStatus.checkOrderStatus(requestCancelOrderRequest.orderStatus());
+        if (orderStatus == OrderStatus.ORDER_REFUND_REQUESTED ||
+                orderStatus == OrderStatus.ORDER_EXCHANGE_REQUESTED) {
+            final Orders order = findByOrderId(orderId);
+            order.checkAuthorizedMember(member);
+            order.modifyOrderStatus(orderStatus);
+        }
     }
 
 
