@@ -1,13 +1,15 @@
 package com.ll.topcastingbe.domain.member.entity;
 
-import jakarta.persistence.Embedded;
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,5 +44,22 @@ public class Member {
     private Address address;
 
     private String phoneNumber;
+
+    private String roles;
+
+    public List<String> getRoleList() {
+        if (this.roles.length() > 0) {
+            return Arrays.asList(this.roles.split(","));
+        }
+        return new ArrayList<>();
+    }
+
+    public void grantRole() {
+        if (username.equals("admin")) {
+            roles = "ROLE_ADMIN, ROLE_USER";
+        } else {
+            roles = "ROLE_USER";
+        }
+    }
 
 }
