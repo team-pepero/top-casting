@@ -12,6 +12,7 @@ public class TossPaymentConfig {
 
     private final String tossApiUri = "https://api.tosspayments.com/v1/payments/confirm";
 
+    private final String tossCancelApiuri = "https://api.tosspayments.com/v1/payments/";
     //test시크릿키
     private final String testTossAuthorizationHeader = "Basic dGVzdF9za196WExrS0V5cE5BcldtbzUwblgzbG1lYXhZRzVSOg==";
 
