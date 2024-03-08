@@ -143,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {
-        addOrderRequest.addOrderItemRequest().stream()
+        addOrderRequest.addOrderItemRequest()
                 .forEach(addOrderItemRequest -> {
                     orderItemService.addOrderItem(order, addOrderItemRequest);
                 });
