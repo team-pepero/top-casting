@@ -11,11 +11,13 @@ import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetInitResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetItemInitResponse;
+import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
 import com.ll.topcastingbe.domain.order.entity.Orders;
 import com.ll.topcastingbe.domain.order.exception.BusinessException;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
+import com.ll.topcastingbe.domain.order.repository.order_item.OrderItemRepository;
 import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
     private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     @Transactional
@@ -44,21 +47,32 @@ public class OrderServiceImpl implements OrderService {
         return addOrderResponse;
     }
 
+    //todo 나중에 리팩토링 해야함
     @Override
     public FindOrderResponse findOrder(final UUID orderId, final Member member) {
         final Orders order = findByOrderId(orderId);
         order.checkAuthorizedMember(member);
 
-        final FindOrderResponse findOrderResponse = FindOrderResponse.of(order);
+        List<FindOrderItemResponse> findOrderItemResponses = orderItemService.findAllByOrderId(orderId, member);
+        final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+
         return findOrderResponse;
     }
 
     @Override
     public List<FindOrderResponse> findOrderList(final Member member) {
         final List<Orders> orders = orderRepository.findAllByMember(member);
-        final List<FindOrderResponse> findOrderResponseList = FindOrderResponse.ofList(orders);
 
-        return findOrderResponseList;
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderId(order.getId(), member);
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+
+        }
+
+        return findOrderResponses;
     }
 
     @Override
