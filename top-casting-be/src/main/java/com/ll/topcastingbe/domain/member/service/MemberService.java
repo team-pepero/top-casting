@@ -93,4 +93,8 @@ public class MemberService {
         }
         memberRepository.delete(member);
     }
+
+    public Member findMember(String username) {
+        return null;
+    }
 }
