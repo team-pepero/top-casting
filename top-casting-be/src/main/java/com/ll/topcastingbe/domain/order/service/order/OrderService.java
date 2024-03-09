@@ -33,4 +33,6 @@ public interface OrderService {
                             final Member member);
 
     List<FindOrderResponse> findOrderListForAdmin();
+
+    List<FindOrderResponse> findAllCancelOrderRequestsForAdmin();
 }

@@ -1,5 +1,8 @@
 package com.ll.topcastingbe.domain.order.service.order;
 
+import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_EXCHANGE_REQUESTED;
+import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_REFUND_REQUESTED;
+
 import com.ll.topcastingbe.domain.cart.entity.CartItem;
 import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
@@ -129,12 +132,26 @@ public class OrderServiceImpl implements OrderService {
                                    final RequestCancelOrderRequest requestCancelOrderRequest,
                                    final Member member) {
         final OrderStatus orderStatus = OrderStatus.checkOrderStatus(requestCancelOrderRequest.orderStatus());
-        if (orderStatus == OrderStatus.ORDER_REFUND_REQUESTED ||
-                orderStatus == OrderStatus.ORDER_EXCHANGE_REQUESTED) {
+        if (orderStatus == ORDER_REFUND_REQUESTED ||
+                orderStatus == ORDER_EXCHANGE_REQUESTED) {
             final Orders order = findByOrderId(orderId);
             order.checkAuthorizedMember(member);
             order.modifyOrderStatus(orderStatus);
         }
+    }
+
+    @Override
+    public List<FindOrderResponse> findAllCancelOrderRequestsForAdmin() {
+        final List<Orders> orders = orderRepository.findByOrderStatusRefundOrOrderStatusExchange(ORDER_REFUND_REQUESTED,
+                ORDER_EXCHANGE_REQUESTED);
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderIdForAdmin(order.getId());
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+        }
+        return findOrderResponses;
     }
 
 
