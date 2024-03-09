@@ -8,10 +8,7 @@ import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderForAdminDto;
-import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitRequestDto;
-import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.RequestCancelOrderDto;
-import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
@@ -90,21 +87,6 @@ public class OrderController {
                 .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
         orderService.removeOrder(orderId, member);
         return ResponseEntity.noContent().build();
-    }
-
-    //    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/order-sheet")
-    public ResponseEntity<OrderSheetInitResponseDto> initSheet(
-            @RequestBody OrderSheetInitRequestDto orderSheetInitRequestDto,
-            @AuthenticationPrincipal UserDetails userDetails) {
-//        final Member member = memberService.findMember(userDetails.getUsername());
-        final Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
-        final OrderSheetInitRequest orderSheetInitRequest = orderSheetInitRequestDto.toOrderSheetRequest();
-        final OrderSheetInitResponseDto orderSheetInitResponseDto = OrderSheetInitResponseDto.of(
-                orderService.initOrderSheet(orderSheetInitRequest, member));
-
-        return ResponseEntity.ok(orderSheetInitResponseDto);
     }
 
     //    @PreAuthorize("isAuthenticated()")

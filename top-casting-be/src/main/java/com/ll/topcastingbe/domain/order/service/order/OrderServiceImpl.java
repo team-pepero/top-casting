@@ -3,23 +3,17 @@ package com.ll.topcastingbe.domain.order.service.order;
 import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_EXCHANGE_REQUESTED;
 import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_REFUND_REQUESTED;
 
-import com.ll.topcastingbe.domain.cart.entity.CartItem;
 import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
-import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
-import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetItemInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
-import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetInitResponse;
-import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetItemInitResponse;
 import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
 import com.ll.topcastingbe.domain.order.entity.OrderStatus;
 import com.ll.topcastingbe.domain.order.entity.Orders;
-import com.ll.topcastingbe.domain.order.exception.BusinessException;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
@@ -168,53 +162,6 @@ public class OrderServiceImpl implements OrderService {
         final FindOrderForAdminResponse findOrderForAdminResponse
                 = FindOrderForAdminResponse.of(order, findOrderItemResponses, payment.getPaymentKey());
         return findOrderForAdminResponse;
-    }
-
-    //주문 시트 초기화시 필요한 정보 생성
-    @Override
-    public OrderSheetInitResponse initOrderSheet(final OrderSheetInitRequest orderSheetInitRequest,
-                                                 final Member member) {
-
-        List<OrderSheetItemInitResponse> orderSheetItemInitResponses = createOrderSheetItemResponses(
-                orderSheetInitRequest);
-
-        final OrderSheetInitResponse orderSheetInitResponse = OrderSheetInitResponse.builder()
-                .memberName(member.getName())
-                .memberAddress(member.getAddress().getAddress())
-                .phoneNumber(member.getPhoneNumber())
-                .shippingFee(orderSheetInitRequest.shippingFee())
-                .orderSheetItemInitResponses(orderSheetItemInitResponses)
-                .build();
-
-        return orderSheetInitResponse;
-    }
-
-    ////itemQuantity를 검증 후 List<OrderSheetItemInitResponse>를 만듬
-    private List<OrderSheetItemInitResponse> createOrderSheetItemResponses(
-            final OrderSheetInitRequest orderSheetInitRequest) {
-
-        List<OrderSheetItemInitResponse> orderSheetItemInitResponses = new ArrayList<>();
-
-        for (OrderSheetItemInitRequest orderSheetItemInitRequest : orderSheetInitRequest.orderSheetItemInitRequests()) {
-            final CartItem cartItem = cartItemRepository.findById(orderSheetItemInitRequest.cartItemId())
-                    .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
-            //ItemQuantity검증 메서드
-            matchItemQuantity(orderSheetItemInitRequest, cartItem);
-
-            final OrderSheetItemInitResponse orderSheetItemInitResponse = OrderSheetItemInitResponse.builder()
-                    .optionId(cartItem.getOption().getId())
-                    .itemQuantity(Long.valueOf(cartItem.getItemQuantity()))
-                    .build();
-            orderSheetItemInitResponses.add(orderSheetItemInitResponse);
-        }
-        return orderSheetItemInitResponses;
-    }
-
-    //갯수 검증 로직
-    private void matchItemQuantity(final OrderSheetItemInitRequest orderSheetItemInitRequest, final CartItem cartItem) {
-        if (cartItem.getItemQuantity() != orderSheetItemInitRequest.itemQuantity()) {
-            throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
-        }
     }
 
     private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {
