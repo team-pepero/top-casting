@@ -3,10 +3,12 @@ package com.ll.topcastingbe.domain.member.controller;
 import com.ll.topcastingbe.domain.member.dto.MemberModifyRequestDto;
 import com.ll.topcastingbe.domain.member.exception.PasswordAndPasswordCheckNotMatchException;
 import com.ll.topcastingbe.domain.member.service.MemberService;
+import com.ll.topcastingbe.global.security.auth.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,9 +27,9 @@ public class MemberDetailController {
 
     private final MemberService memberService;
 
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{memberId}")
-    public ResponseEntity<?> memberDetailsModify(//@AuthenticationPrincipal PrincipalDetails user,
+    public ResponseEntity<?> memberDetailsModify(@AuthenticationPrincipal PrincipalDetails principal,
                                                  @PathVariable Long memberId,
                                                  @RequestBody @Valid MemberModifyRequestDto memberModifyDto) {
 
@@ -37,8 +39,7 @@ public class MemberDetailController {
         }
 
         memberService.modifyMember(
-                //user.getMember().getId(),
-                memberId,
+                principal.getMember().getId(),
                 memberModifyDto.getNickname(),
                 memberModifyDto.getPassword(),
                 memberModifyDto.getEmail(),
@@ -50,11 +51,11 @@ public class MemberDetailController {
         return ResponseEntity.ok(null);
     }
 
-    //@PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{memberId}")
-    public ResponseEntity<?> memberRemove(//@AuthenticationPrincipal PrincipalDetails user,
-                                                 @PathVariable Long memberId) {
-        memberService.removeMember(memberId);
+    public ResponseEntity<?> memberRemove(@AuthenticationPrincipal PrincipalDetails principal,
+                                          @PathVariable Long memberId) {
+        memberService.removeMember(principal.getMember().getId());
         return ResponseEntity.ok(null);
     }
 }
