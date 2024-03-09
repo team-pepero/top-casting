@@ -6,14 +6,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 
 public class SecurityConfig {
 
-    @Order(1)
+    @Order(2)
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -23,8 +22,6 @@ public class SecurityConfig {
                                     .requestMatchers("/gen/**")
                                     .permitAll()
                                     .requestMatchers("/resource/**")
-                                    .permitAll()
-                                    .requestMatchers("/h2-console/**")
                                     .permitAll();
                             authorizeRequests
                                     .anyRequest()
@@ -44,16 +41,7 @@ public class SecurityConfig {
                 )
                 .formLogin(
                         formLogin ->
-                                formLogin
-                                        .loginPage("/member/login")
-                                        .permitAll()
-                )
-                .logout(
-                        logout ->
-                                logout
-                                        .logoutRequestMatcher(
-                                                new AntPathRequestMatcher("/member/logout")
-                                        )
+                                formLogin.disable()
                 );
 
         return http.build();

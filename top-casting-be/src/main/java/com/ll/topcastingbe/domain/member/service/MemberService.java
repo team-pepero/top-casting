@@ -21,18 +21,19 @@ public class MemberService {
     @Transactional
     public void join(JoinRequestDto joinRequestDto) {
         Member member = Member.builder()
-                .username(joinRequestDto.getUsername())
-                .password(passwordEncoder.encode(joinRequestDto.getPassword()))
-                .nickname(joinRequestDto.getNickname())
-                .name(joinRequestDto.getName())
-                .email(joinRequestDto.getEmail())
-                .birthDate(joinRequestDto.getBirthDate())
-                .phoneNumber(joinRequestDto.getPhoneNumber())
-                .address(Address.builder()
-                        .address(joinRequestDto.getAddress())
-                        .zipcode(joinRequestDto.getZipcode())
-                        .build())
-                .build();
+                                .username(joinRequestDto.getUsername())
+                                .password(passwordEncoder.encode(joinRequestDto.getPassword()))
+                                .nickname(joinRequestDto.getNickname())
+                                .name(joinRequestDto.getName())
+                                .email(joinRequestDto.getEmail())
+                                .birthDate(joinRequestDto.getBirthDate())
+                                .phoneNumber(joinRequestDto.getPhoneNumber())
+                                .address(Address.builder()
+                                                 .address(joinRequestDto.getAddress())
+                                                 .zipcode(joinRequestDto.getZipcode())
+                                                 .build())
+                                .build();
+        member.grantRole();
 
         memberRepository.save(member);
     }
@@ -43,5 +44,9 @@ public class MemberService {
             return false;
         }
         return true;
+    }
+
+    public Member findUsername(String username) {
+        return memberRepository.findByUsername(username);
     }
 }
