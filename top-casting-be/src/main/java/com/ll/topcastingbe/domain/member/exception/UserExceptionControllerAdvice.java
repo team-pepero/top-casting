@@ -32,4 +32,25 @@ public class UserExceptionControllerAdvice {
                         .build()
                 );
     }
+
+    @ExceptionHandler(PasswordAndPasswordCheckNotMatchException.class)
+    public ResponseEntity<ErrorResponseDto> handlePasswordAndPasswordCheckNotMatchExceptions(
+            PasswordAndPasswordCheckNotMatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponseDto.builder()
+                        .code(HttpStatus.BAD_REQUEST.toString())
+                        .message(ex.getMessage())
+                        .build()
+                );
+    }
+
+    @ExceptionHandler(PasswordNotMatchException.class)
+    public ResponseEntity<ErrorResponseDto> handlePasswordNotMatchExceptions(PasswordNotMatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponseDto.builder()
+                        .code(HttpStatus.BAD_REQUEST.toString())
+                        .message(ex.getMessage())
+                        .build()
+                );
+    }
 }

@@ -21,9 +21,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class Member {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -62,4 +62,10 @@ public class Member {
         }
     }
 
+    public void changeDetails(String nickname, String email, Address address, String phoneNumber) {
+        this.nickname = nickname;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+    }
 }
