@@ -12,6 +12,7 @@ import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetItemInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
+import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetInitResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetItemInitResponse;
@@ -24,6 +25,8 @@ import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
 import com.ll.topcastingbe.domain.order.repository.order_item.OrderItemRepository;
 import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
+import com.ll.topcastingbe.domain.payment.entity.Payment;
+import com.ll.topcastingbe.domain.payment.repository.PaymentRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemService orderItemService;
     private final CartItemRepository cartItemRepository;
     private final OrderItemRepository orderItemRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     @Transactional
@@ -154,6 +158,17 @@ public class OrderServiceImpl implements OrderService {
         return findOrderResponses;
     }
 
+    @Override
+    public FindOrderForAdminResponse findOrderForAdmin(final UUID orderId) {
+        final Orders order = findByOrderId(orderId);
+        final Payment payment = paymentRepository.findByOrder(order)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
+        final List<FindOrderItemResponse> findOrderItemResponses =
+                orderItemService.findAllByOrderIdForAdmin(order.getId());
+        final FindOrderForAdminResponse findOrderForAdminResponse
+                = FindOrderForAdminResponse.of(order, findOrderItemResponses, payment.getPaymentKey());
+        return findOrderForAdminResponse;
+    }
 
     //주문 시트 초기화시 필요한 정보 생성
     @Override

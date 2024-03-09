@@ -7,11 +7,13 @@ import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
+import com.ll.topcastingbe.domain.order.dto.order.FindOrderForAdminDto;
 import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitRequestDto;
 import com.ll.topcastingbe.domain.order.dto.order.OrderSheetInitResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.RequestCancelOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
+import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.exception.AuthException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
@@ -131,6 +133,14 @@ public class OrderController {
     public ResponseEntity<List<FindOrderDto>> orderFindAllForAdmin() {
         final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(orderService.findOrderListForAdmin());
         return ResponseEntity.ok(findOrderDtos);
+    }
+
+    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/admin/order/{orderId}")
+    public ResponseEntity<FindOrderForAdminDto> orderFindForAdmin(@PathVariable("orderId") final UUID orderId) {
+        FindOrderForAdminResponse findOrderForAdminResponse = orderService.findOrderForAdmin(orderId);
+        final FindOrderForAdminDto findOrderForAdminDto = FindOrderForAdminDto.of(findOrderForAdminResponse);
+        return ResponseEntity.ok(findOrderForAdminDto);
     }
 
 }

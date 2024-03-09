@@ -6,6 +6,7 @@ import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.OrderSheetInitRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
+import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.OrderSheetInitResponse;
 import com.ll.topcastingbe.domain.order.entity.Orders;
@@ -35,4 +36,6 @@ public interface OrderService {
     List<FindOrderResponse> findOrderListForAdmin();
 
     List<FindOrderResponse> findAllCancelOrderRequestsForAdmin();
+
+    FindOrderForAdminResponse findOrderForAdmin(final UUID orderId);
 }
