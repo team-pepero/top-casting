@@ -2,6 +2,7 @@ package com.ll.topcastingbe.domain.order.controller.order;
 
 
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.member.repository.MemberRepository;
 import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
@@ -31,12 +32,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/order")
     public ResponseEntity<AddOrderResponseDto> orderAdd(@Valid @RequestBody final AddOrderDto addOrderDto,
                                                         @AuthenticationPrincipal final UserDetails userDetails) {
-        final Member member = memberService.findMember(userDetails.getUsername());
+        final Member member = memberRepository.findById(1L).get();
         final AddOrderResponseDto addOrderResponseDto =
                 AddOrderResponseDto.of(orderService.addOrder(addOrderDto.toAddOrderRequest(), member));
 
@@ -49,7 +51,7 @@ public class OrderController {
     @GetMapping("/order/{orderId}")
     public ResponseEntity<FindOrderDto> orderFind(@PathVariable("orderId") final UUID orderId,
                                                   @AuthenticationPrincipal final UserDetails userDetails) {
-        final Member member = memberService.findMember(userDetails.getUsername());
+        final Member member = memberRepository.findById(1L).get();
         final FindOrderDto findOrderDto = FindOrderDto.of(orderService.findOrder(orderId, member));
 
         return ResponseEntity.ok(findOrderDto);
@@ -58,7 +60,7 @@ public class OrderController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/orders")
     public ResponseEntity<List<FindOrderDto>> orderFindAll(@AuthenticationPrincipal final UserDetails userDetails) {
-        final Member member = memberService.findMember(userDetails.getUsername());
+        final Member member = memberRepository.findById(1L).get();
         List<FindOrderResponse> findOrderResponses = orderService.findOrderList(member);
         final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(findOrderResponses);
         return ResponseEntity.ok(findOrderDtos);
@@ -68,7 +70,7 @@ public class OrderController {
     @DeleteMapping("/order/{orderId}")
     public ResponseEntity<List<FindOrderDto>> orderRemove(@PathVariable("orderId") final UUID orderId,
                                                           @AuthenticationPrincipal final UserDetails userDetails) {
-        final Member member = memberService.findMember(userDetails.getUsername());
+        final Member member = memberRepository.findById(1L).get();
         orderService.removeOrder(orderId, member);
         return ResponseEntity.noContent().build();
     }
