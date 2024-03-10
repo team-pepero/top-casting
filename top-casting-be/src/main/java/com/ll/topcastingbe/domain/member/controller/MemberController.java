@@ -22,15 +22,17 @@ public class MemberController {
     public ResponseEntity<?> join(@RequestBody @Valid JoinRequestDto joinRequestDto) {
         if (!joinRequestDto.getPassword().equals(joinRequestDto.getPasswordCheck())) {
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("패스워드를 다시 한번 확인해주세요");
+                           .status(HttpStatus.BAD_REQUEST)
+                           .body("패스워드를 다시 한번 확인해주세요");
         }
         if (memberService.checkNickname(joinRequestDto.getNickname())) {
             return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("중복되는 닉네임이 존재합니다.");
+                           .status(HttpStatus.CONFLICT)
+                           .body("중복되는 닉네임이 존재합니다.");
         }
         memberService.join(joinRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
+
+
 }
