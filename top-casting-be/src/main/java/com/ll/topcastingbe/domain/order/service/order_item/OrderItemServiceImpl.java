@@ -91,7 +91,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @Transactional
-    public void removeAllByOrderItem(final Orders order) {
+    public void removeAllByOrder(final Orders order) {
         orderItemRepository.removeAllByOrder(order);
     }
 }

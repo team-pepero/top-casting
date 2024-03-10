@@ -95,6 +95,7 @@ public class OrderServiceImpl implements OrderService {
     public void removeOrder(final UUID orderId, final Member member) {
         final Orders order = findByOrderId(orderId);
         order.checkAuthorizedMember(member);
+        orderItemService.removeAllByOrder(order);
         orderRepository.delete(order);
     }
 
