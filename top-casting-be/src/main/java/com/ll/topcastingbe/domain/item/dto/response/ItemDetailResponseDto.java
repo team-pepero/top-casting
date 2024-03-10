@@ -1,4 +1,4 @@
-package com.ll.topcastingbe.domain.item.dto;
+package com.ll.topcastingbe.domain.item.dto.response;
 
 import com.ll.topcastingbe.domain.item.entity.Item;
 import com.ll.topcastingbe.domain.option.dto.ItemDetailOptionResponseDto;
