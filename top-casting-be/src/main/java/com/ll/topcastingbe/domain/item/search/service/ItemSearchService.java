@@ -17,60 +17,24 @@ public class ItemSearchService {
     private final ItemRepository itemRepository;
 
     public Slice<SearchItemDto> ItemsSearch(String keyword, Pageable pageable) {
-        int pageSize = pageable.getPageSize();
         List<Item> itemList = itemRepository.findListByItemNameIgnoreCase(keyword, pageable);
-        List<SearchItemDto> itemDtoList = mapToSearchItemDtoList(itemList);
-
-        boolean hasNext = false;
-        if (itemList.size() > pageSize) {
-            itemDtoList.remove(pageSize);
-            hasNext = true;
-        }
-
-        return new SliceImpl<>(itemDtoList, pageable, hasNext);
+        return createSlice(itemList, pageable);
     }
 
     public Slice<SearchItemDto> getItems(Pageable pageable) {
-        int pageSize = pageable.getPageSize();
         List<Item> itemList = itemRepository.findAllItems(pageable);
-        List<SearchItemDto> itemDtoList = mapToSearchItemDtoList(itemList);
-
-        boolean hasNext = false;
-        if (itemList.size() > pageSize) {
-            itemDtoList.remove(pageSize);
-            hasNext = true;
-        }
-
-        return new SliceImpl<>(itemDtoList, pageable, hasNext);
+        return createSlice(itemList, pageable);
     }
 
     public Slice<SearchItemDto> getItemsByMainCategory(Pageable pageable, Long mainCategoryId) {
-        int pageSize = pageable.getPageSize();
         List<Item> itemList = itemRepository.findAllItemsByMainCategory(mainCategoryId, pageable);
-        List<SearchItemDto> itemDtoList = mapToSearchItemDtoList(itemList);
-
-        boolean hasNext = false;
-        if (itemList.size() > pageSize) {
-            itemDtoList.remove(pageSize);
-            hasNext = true;
-        }
-
-        return new SliceImpl<>(itemDtoList, pageable, hasNext);
+        return createSlice(itemList, pageable);
     }
 
     public Slice<SearchItemDto> getItemsBySubcategory(Pageable pageable,
                                                       Long subCategoryId) {
-        int pageSize = pageable.getPageSize();
         List<Item> itemList = itemRepository.findAllItemsBySubCategory(subCategoryId, pageable);
-        List<SearchItemDto> itemDtoList = mapToSearchItemDtoList(itemList);
-
-        boolean hasNext = false;
-        if (itemList.size() > pageSize) {
-            itemDtoList.remove(pageSize);
-            hasNext = true;
-        }
-
-        return new SliceImpl<>(itemDtoList, pageable, hasNext);
+        return createSlice(itemList, pageable);
     }
 
     public Slice<SearchItemDto> sortSearch(Pageable pageable) {
@@ -83,6 +47,19 @@ public class ItemSearchService {
 
     public Slice<SearchItemDto> sortSubCategory(Pageable pageable, Long subCategoryId) {
         return getItemsBySubcategory(pageable, subCategoryId);
+    }
+
+    private Slice<SearchItemDto> createSlice(List<Item> itemList, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        List<SearchItemDto> itemDtoList = mapToSearchItemDtoList(itemList);
+
+        boolean hasNext = false;
+        if (itemList.size() > pageSize) {
+            itemDtoList.remove(pageSize);
+            hasNext = true;
+        }
+
+        return new SliceImpl<>(itemDtoList, pageable, hasNext);
     }
 
     private List<SearchItemDto> mapToSearchItemDtoList(List<Item> itemList) {
