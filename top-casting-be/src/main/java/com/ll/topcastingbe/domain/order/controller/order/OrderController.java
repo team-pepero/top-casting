@@ -12,17 +12,16 @@ import com.ll.topcastingbe.domain.order.dto.order.RequestCancelOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
-import com.ll.topcastingbe.domain.order.exception.AuthException;
-import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
+import com.ll.topcastingbe.global.security.auth.PrincipalDetails;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,13 +39,11 @@ public class OrderController {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
 
-    //    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/order")
     public ResponseEntity<AddOrderResponseDto> orderAdd(@Valid @RequestBody final AddOrderDto addOrderDto,
-                                                        @AuthenticationPrincipal final UserDetails userDetails) {
-//        final Member member = memberService.findMember(userDetails.getUsername());
-        final Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
+                                                        @AuthenticationPrincipal final PrincipalDetails principalDetails) {
+        final Member member = principalDetails.getMember();
         final AddOrderResponseDto addOrderResponseDto =
                 AddOrderResponseDto.of(orderService.addOrder(addOrderDto.toAddOrderRequest(), member));
 
@@ -55,54 +52,47 @@ public class OrderController {
                 .body(addOrderResponseDto);
     }
 
-    //    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/order/{orderId}")
     public ResponseEntity<FindOrderDto> orderFind(@PathVariable("orderId") final UUID orderId,
-                                                  @AuthenticationPrincipal final UserDetails userDetails) {
-//        final Member member = memberService.findMember(userDetails.getUsername());
-        final Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
+                                                  @AuthenticationPrincipal final PrincipalDetails principalDetails) {
+        final Member member = principalDetails.getMember();
         final FindOrderDto findOrderDto = FindOrderDto.of(orderService.findOrder(orderId, member));
 
         return ResponseEntity.ok(findOrderDto);
     }
 
-    //    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/orders")
-    public ResponseEntity<List<FindOrderDto>> orderFindAll(@AuthenticationPrincipal final UserDetails userDetails) {
-//        final Member member = memberService.findMember(userDetails.getUsername());
-        final Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
+    public ResponseEntity<List<FindOrderDto>> orderFindAll(
+            @AuthenticationPrincipal final PrincipalDetails principalDetails) {
+        final Member member = principalDetails.getMember();
         List<FindOrderResponse> findOrderResponses = orderService.findOrderList(member);
         final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(findOrderResponses);
         return ResponseEntity.ok(findOrderDtos);
     }
 
-    //    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/order/{orderId}")
     public ResponseEntity<List<FindOrderDto>> orderRemove(@PathVariable("orderId") final UUID orderId,
-                                                          @AuthenticationPrincipal final UserDetails userDetails) {
-//        final Member member = memberService.findMember(userDetails.getUsername());
-        final Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
+                                                          @AuthenticationPrincipal final PrincipalDetails principalDetails) {
+        final Member member = principalDetails.getMember();
         orderService.removeOrder(orderId, member);
         return ResponseEntity.noContent().build();
     }
 
-    //    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/orders/{orderId}/refund")
     public ResponseEntity<Void> cancelOrderRequest(@RequestBody final RequestCancelOrderDto requestCancelOrderDto,
                                                    @PathVariable("orderId") final UUID orderId,
-                                                   @AuthenticationPrincipal final UserDetails userDetails) {
-//        final Member member = memberService.findMember(userDetails.getUsername());
-        final Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new AuthException(ErrorMessage.UNAUTHORIZED_USER));
+                                                   @AuthenticationPrincipal final PrincipalDetails principalDetails) {
+        final Member member = principalDetails.getMember();
         RequestCancelOrderRequest requestCancelOrderRequest = requestCancelOrderDto.toRequestCancelOrderRequest();
         orderService.requestCancelOrder(orderId, requestCancelOrderRequest, member);
         return ResponseEntity.ok().build();
     }
 
-    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/orders/refund")
     public ResponseEntity<List<FindOrderDto>> cancelOrderRequestsFindAllForAdmin() {
         List<FindOrderResponse> findOrderResponses = orderService.findAllCancelOrderRequestsForAdmin();
@@ -110,14 +100,14 @@ public class OrderController {
         return ResponseEntity.ok().body(findOrderDtos);
     }
 
-    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/admin/orders")
     public ResponseEntity<List<FindOrderDto>> orderFindAllForAdmin() {
         final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(orderService.findOrderListForAdmin());
         return ResponseEntity.ok(findOrderDtos);
     }
 
-    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/admin/order/{orderId}")
     public ResponseEntity<FindOrderForAdminDto> orderFindForAdmin(@PathVariable("orderId") final UUID orderId) {
         FindOrderForAdminResponse findOrderForAdminResponse = orderService.findOrderForAdmin(orderId);
