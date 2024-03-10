@@ -1,15 +1,27 @@
 package com.ll.topcastingbe.domain.order.service.order;
 
+import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_EXCHANGE_REQUESTED;
+import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_REFUND_REQUESTED;
+
+import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
+import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
+import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
+import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
+import com.ll.topcastingbe.domain.order.entity.OrderStatus;
 import com.ll.topcastingbe.domain.order.entity.Orders;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
+import com.ll.topcastingbe.domain.order.repository.order_item.OrderItemRepository;
 import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
+import com.ll.topcastingbe.domain.payment.entity.Payment;
+import com.ll.topcastingbe.domain.payment.repository.PaymentRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
+    private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final PaymentRepository paymentRepository;
 
     @Override
     @Transactional
@@ -35,21 +50,32 @@ public class OrderServiceImpl implements OrderService {
         return addOrderResponse;
     }
 
+    //todo 나중에 리팩토링 해야함
     @Override
     public FindOrderResponse findOrder(final UUID orderId, final Member member) {
         final Orders order = findByOrderId(orderId);
         order.checkAuthorizedMember(member);
 
-        final FindOrderResponse findOrderResponse = FindOrderResponse.of(order);
+        List<FindOrderItemResponse> findOrderItemResponses = orderItemService.findAllByOrderId(orderId, member);
+        final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+
         return findOrderResponse;
     }
 
     @Override
     public List<FindOrderResponse> findOrderList(final Member member) {
         final List<Orders> orders = orderRepository.findAllByMember(member);
-        final List<FindOrderResponse> findOrderResponseList = FindOrderResponse.ofList(orders);
 
-        return findOrderResponseList;
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderId(order.getId(), member);
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+
+        }
+
+        return findOrderResponses;
     }
 
     @Override
@@ -69,6 +95,7 @@ public class OrderServiceImpl implements OrderService {
     public void removeOrder(final UUID orderId, final Member member) {
         final Orders order = findByOrderId(orderId);
         order.checkAuthorizedMember(member);
+        orderItemService.removeAllByOrder(order);
         orderRepository.delete(order);
     }
 
@@ -85,8 +112,61 @@ public class OrderServiceImpl implements OrderService {
                 .forEach(order -> order.checkAuthorizedMember(member));
     }
 
+    @Override
+    public List<FindOrderResponse> findOrderListForAdmin() {
+        final List<Orders> orders = orderRepository.findAll();
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderIdForAdmin(order.getId());
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+        }
+        return findOrderResponses;
+    }
+
+    @Override
+    @Transactional
+    public void requestCancelOrder(final UUID orderId,
+                                   final RequestCancelOrderRequest requestCancelOrderRequest,
+                                   final Member member) {
+        final OrderStatus orderStatus = OrderStatus.checkOrderStatus(requestCancelOrderRequest.orderStatus());
+        if (orderStatus == ORDER_REFUND_REQUESTED ||
+                orderStatus == ORDER_EXCHANGE_REQUESTED) {
+            final Orders order = findByOrderId(orderId);
+            order.checkAuthorizedMember(member);
+            order.modifyOrderStatus(orderStatus);
+        }
+    }
+
+    @Override
+    public List<FindOrderResponse> findAllCancelOrderRequestsForAdmin() {
+        final List<Orders> orders = orderRepository.findByOrderStatusRefundOrOrderStatusExchange(ORDER_REFUND_REQUESTED,
+                ORDER_EXCHANGE_REQUESTED);
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderIdForAdmin(order.getId());
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+        }
+        return findOrderResponses;
+    }
+
+    @Override
+    public FindOrderForAdminResponse findOrderForAdmin(final UUID orderId) {
+        final Orders order = findByOrderId(orderId);
+        final Payment payment = paymentRepository.findByOrder(order)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
+        final List<FindOrderItemResponse> findOrderItemResponses =
+                orderItemService.findAllByOrderIdForAdmin(order.getId());
+        final FindOrderForAdminResponse findOrderForAdminResponse
+                = FindOrderForAdminResponse.of(order, findOrderItemResponses, payment.getPaymentKey());
+        return findOrderForAdminResponse;
+    }
+
     private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {
-        addOrderRequest.addOrderItemRequest().stream()
+        addOrderRequest.addOrderItemRequest()
                 .forEach(addOrderItemRequest -> {
                     orderItemService.addOrderItem(order, addOrderItemRequest);
                 });

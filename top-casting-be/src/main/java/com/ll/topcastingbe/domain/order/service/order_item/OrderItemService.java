@@ -18,5 +18,7 @@ public interface OrderItemService {
                          final ModifyOrderItemRequest modifyOrderItemRequest,
                          final Member member);
 
-    void removeAllByOrderItem(final Orders order);
+    void removeAllByOrder(final Orders order);
+
+    List<FindOrderItemResponse> findAllByOrderIdForAdmin(final UUID orderId);
 }
