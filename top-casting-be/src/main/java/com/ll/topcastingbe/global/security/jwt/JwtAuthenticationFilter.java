@@ -85,10 +85,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                               System.currentTimeMillis() + SecurityConstants.REFRESH_EXPIRATION_TIME))
                                       .withClaim("username", principalDetails.getUsername())
                                       .sign(Algorithm.HMAC512(jwtProps.refreshKey));
-        Cookie RefreshCookie = new Cookie("RefreshToken", refreshToken);
-        Cookie AccessCookie = new Cookie("AccessToken", accessToken);
-        response.addCookie(AccessCookie);
-        response.addCookie(RefreshCookie);
+
+        Cookie refreshCookie = new Cookie("RefreshToken", refreshToken);
+//        refreshCookie.setHttpOnly(true);
+
+        Cookie accessCookie = new Cookie("AccessToken", accessToken);
+        response.addCookie(refreshCookie);
+        response.addCookie(accessCookie);
 
         RefreshToken token = RefreshToken.builder()
                                      .token(refreshToken)
@@ -97,4 +100,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                      .build();
         refreshTokenRepository.save(token);
     }
+
 }

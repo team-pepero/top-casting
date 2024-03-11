@@ -1,6 +1,7 @@
 package com.ll.topcastingbe.domain.member.service;
 
 import com.ll.topcastingbe.domain.member.dto.JoinRequestDto;
+import com.ll.topcastingbe.domain.member.dto.MemberInfoResponseDto;
 import com.ll.topcastingbe.domain.member.entity.Address;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.repository.MemberRepository;
@@ -46,7 +47,12 @@ public class MemberService {
         return true;
     }
 
-    public Member findUsername(String username) {
+
+    public Member findMember(String username) {
         return memberRepository.findByUsername(username);
+    }
+
+    public MemberInfoResponseDto findMemberInfo(String username){
+        return new MemberInfoResponseDto(memberRepository.findByUsername(username));
     }
 }
