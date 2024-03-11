@@ -30,7 +30,10 @@ public class JoinRequestDto {
     private LocalDate birthDate;
 
     @NotNull
-    private String address;
+    private String address1;
+
+    @NotNull
+    private String address2;
 
     @NotNull
     private String zipcode;
