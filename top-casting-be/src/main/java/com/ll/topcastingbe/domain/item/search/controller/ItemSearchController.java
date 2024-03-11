@@ -1,12 +1,19 @@
 package com.ll.topcastingbe.domain.item.search.controller;
 
+import com.ll.topcastingbe.domain.item.dto.ItemDetailResponseDto;
 import com.ll.topcastingbe.domain.item.search.dto.SearchItemDto;
 import com.ll.topcastingbe.domain.item.search.service.ItemSearchService;
+import com.ll.topcastingbe.domain.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +23,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/items")
 public class ItemSearchController {
     private final ItemSearchService itemSearchService;
+    private final ItemService itemService;
+
+    @GetMapping("/{itemId}")
+    public ResponseEntity<?> itemDetails(@PathVariable Long itemId){
+        ItemDetailResponseDto itemDto = itemService.findItem(itemId);
+        return ResponseEntity.status(HttpStatus.OK).body(itemDto);
+    }
+
+ /*   @PreAuthorize("hasRole('ADMIN')") //상품 추가는 관리자만 가능
+    @PostMapping("/{itemId}")
+    public ResponseEntity<?> itemAdd(){
+
+    }*/
+    /*@PreAuthorize("hasRole('ADMIN')") //상품 삭제는 관리자만 가능
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<?> itemRemove(){
+
+    }*/
 
     @GetMapping("")
     public ResponseEntity<?> itemsList(Pageable pageable) {

@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ItemSearchService {
-    private final ItemRepository itemRepository;
 
+    private final ItemRepository itemRepository;
+    
     public Slice<SearchItemDto> ItemsSearch(String keyword, Pageable pageable) {
         List<Item> itemList = itemRepository.findListByItemNameIgnoreCase(keyword, pageable);
         return createSlice(itemList, pageable);
