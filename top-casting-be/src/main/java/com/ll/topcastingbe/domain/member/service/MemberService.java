@@ -42,6 +42,7 @@ public class MemberService {
                         .zipcode(joinRequestDto.getZipcode())
                         .build())
                 .build();
+        member.grantRole();
 
         memberRepository.save(member);
     }
