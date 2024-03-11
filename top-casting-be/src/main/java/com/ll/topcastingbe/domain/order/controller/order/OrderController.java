@@ -92,7 +92,7 @@ public class OrderController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/orders/refund")
     public ResponseEntity<List<FindOrderDto>> cancelOrderRequestsFindAllForAdmin() {
         List<FindOrderResponse> findOrderResponses = orderService.findAllCancelOrderRequestsForAdmin();
@@ -100,14 +100,14 @@ public class OrderController {
         return ResponseEntity.ok().body(findOrderDtos);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/orders")
     public ResponseEntity<List<FindOrderDto>> orderFindAllForAdmin() {
         final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(orderService.findOrderListForAdmin());
         return ResponseEntity.ok(findOrderDtos);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/order/{orderId}")
     public ResponseEntity<FindOrderForAdminDto> orderFindForAdmin(@PathVariable("orderId") final UUID orderId) {
         FindOrderForAdminResponse findOrderForAdminResponse = orderService.findOrderForAdmin(orderId);
