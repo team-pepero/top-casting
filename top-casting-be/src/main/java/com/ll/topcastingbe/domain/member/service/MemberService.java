@@ -4,6 +4,7 @@ import com.ll.topcastingbe.domain.cart.entity.Cart;
 import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.cart.repository.CartRepository;
 import com.ll.topcastingbe.domain.member.dto.JoinRequestDto;
+import com.ll.topcastingbe.domain.member.dto.MemberInfoResponseDto;
 import com.ll.topcastingbe.domain.member.entity.Address;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.exception.PasswordNotMatchException;
@@ -41,6 +42,7 @@ public class MemberService {
                         .zipcode(joinRequestDto.getZipcode())
                         .build())
                 .build();
+        member.grantRole();
 
         memberRepository.save(member);
     }
@@ -53,8 +55,14 @@ public class MemberService {
         return true;
     }
 
-    public Member findUsername(String username) {
+
+    public Member findMember(String username) {
         return memberRepository.findByUsername(username);
+    }
+
+
+    public MemberInfoResponseDto findMemberInfo(String username) {
+        return new MemberInfoResponseDto(memberRepository.findByUsername(username));
     }
 
     @Transactional
@@ -94,7 +102,4 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    public Member findMember(String username) {
-        return null;
-    }
 }
