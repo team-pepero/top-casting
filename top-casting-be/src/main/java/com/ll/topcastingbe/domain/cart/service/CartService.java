@@ -37,7 +37,7 @@ public class CartService {
         //장바구니가 존재하는지 확인 -> 없으면 생성
         Cart cart = cartRepository.findCartByMemberId(memberId).orElseGet(() -> createCart(memberId));
 
-        CartItem cartItem = cartItemRepository.findByMemberIdAndOptionId(memberId, optionId);
+        CartItem cartItem = cartItemRepository.findByCartIdAndOptionId(cart.getId(), optionId);
         //카트안에 해당 상품이 없었다면 추가
         if (cartItem == null) {
             Option option = optionRepository.findById(optionId)
@@ -74,7 +74,9 @@ public class CartService {
     }
 
     public CartItemListResponseDto findCartItemList(Long memberId) {
-        List<CartItem> cartItems = cartItemRepository.findByMemberId(memberId);
+        //장바구니가 존재하는지 확인 -> 없으면 생성
+        Cart cart = cartRepository.findCartByMemberId(memberId).orElseGet(() -> createCart(memberId));
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
         return CartItemListResponseDto.toDto(cartItems);
     }
 

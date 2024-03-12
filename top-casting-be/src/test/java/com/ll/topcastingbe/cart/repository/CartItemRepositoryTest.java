@@ -16,8 +16,8 @@ class CartItemRepositoryTest {
 	private CartRepository cartRepository;
 
 	@Test
-	void findByMemberIdTest(){
-		Long memberId = 1L;
-		cartItemRepository.findByMemberId(memberId);
+	void findByCartIdTest(){
+		Long cartId = 1L;
+		cartItemRepository.findByCartId(cartId);
 	}
 }
