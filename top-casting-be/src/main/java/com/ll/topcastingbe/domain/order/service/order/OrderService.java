@@ -29,4 +29,6 @@ public interface OrderService {
                             final Member member);
 
     List<FindOrderResponse> addOrderResponse(final List<Orders> orders);
+
+    Long getTotalItemPrice(final Orders order);
 }

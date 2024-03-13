@@ -10,14 +10,17 @@ import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequ
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
+import com.ll.topcastingbe.domain.order.entity.OrderItem;
 import com.ll.topcastingbe.domain.order.entity.OrderStatus;
 import com.ll.topcastingbe.domain.order.entity.Orders;
+import com.ll.topcastingbe.domain.order.exception.BusinessException;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
 import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         addOrderItem(order, addOrderRequest);
-
+        checkTotalItemPrice(order);
         final AddOrderResponse addOrderResponse = AddOrderResponse.of(order);
         return addOrderResponse;
     }
@@ -119,6 +122,21 @@ public class OrderServiceImpl implements OrderService {
             findOrderResponses.add(findOrderResponse);
         }
         return findOrderResponses;
+    }
+
+    public Long getTotalItemPrice(final Orders order) {
+        final List<OrderItem> orderItems = orderItemService.findOrderItems(order);
+        Long totalItemPrice = orderItems.stream()
+                .mapToLong(OrderItem::getTotalPrice)
+                .sum();
+        return totalItemPrice;
+    }
+
+    private void checkTotalItemPrice(final Orders order) {
+        Long totalItemPrice = getTotalItemPrice(order);
+        if (!Objects.equals(totalItemPrice, order.getTotalItemPrice())) {
+            throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
+        }
     }
 
     private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {

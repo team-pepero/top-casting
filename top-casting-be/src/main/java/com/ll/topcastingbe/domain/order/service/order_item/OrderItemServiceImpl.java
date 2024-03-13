@@ -83,6 +83,11 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemResponses;
     }
 
+    public List<OrderItem> findOrderItems(final Orders order) {
+        final List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+        return orderItems;
+    }
+
     @Override
     @Transactional
     public void updateOrderItem(Long orderItemId, ModifyOrderItemRequest modifyOrderItemRequest, Member member) {
