@@ -15,6 +15,9 @@ public class RefreshTokenService {
     @Transactional
     public void expireToken(String token) {
         RefreshToken findToken = refreshTokenRepository.findByToken(token);
+        if(findToken == null){
+            return;
+        }
         findToken.uncheck();
     }
 }
