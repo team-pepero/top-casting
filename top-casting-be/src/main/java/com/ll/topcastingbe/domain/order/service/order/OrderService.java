@@ -28,9 +28,5 @@ public interface OrderService {
     void requestCancelOrder(final UUID orderId, final RequestCancelOrderRequest requestCancelOrderRequest,
                             final Member member);
 
-//    List<FindOrderResponse> findOrderListForAdmin();
-//
-//    List<FindOrderResponse> findAllCancelOrderRequestsForAdmin();
-//
-//    FindOrderForAdminResponse findOrderForAdmin(final UUID orderId);
+    List<FindOrderResponse> addOrderResponse(final List<Orders> orders);
 }

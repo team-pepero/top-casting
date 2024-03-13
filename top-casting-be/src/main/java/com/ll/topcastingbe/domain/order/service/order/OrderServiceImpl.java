@@ -57,16 +57,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<FindOrderResponse> findOrderList(final Member member) {
         final List<Orders> orders = orderRepository.findAllByMember(member);
-
-        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
-        for (Orders order : orders) {
-            final List<FindOrderItemResponse> findOrderItemResponses =
-                    orderItemService.findAllByOrderId(order.getId(), member);
-            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
-            findOrderResponses.add(findOrderResponse);
-
-        }
-
+        List<FindOrderResponse> findOrderResponses = addOrderResponse(orders);
         return findOrderResponses;
     }
 
@@ -116,6 +107,18 @@ public class OrderServiceImpl implements OrderService {
             order.checkAuthorizedMember(member);
             order.modifyOrderStatus(orderStatus);
         }
+    }
+
+    public List<FindOrderResponse> addOrderResponse(final List<Orders> orders) {
+        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+
+        for (Orders order : orders) {
+            final List<FindOrderItemResponse> findOrderItemResponses =
+                    orderItemService.findAllByOrderIdForAdmin(order.getId());
+            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
+            findOrderResponses.add(findOrderResponse);
+        }
+        return findOrderResponses;
     }
 
     private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {

@@ -13,7 +13,6 @@ import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
 import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
 import com.ll.topcastingbe.domain.payment.entity.Payment;
 import com.ll.topcastingbe.domain.payment.repository.PaymentRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +31,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     @Override
     public List<FindOrderResponse> findOrderListForAdmin() {
         final List<Orders> orders = orderRepository.findAll();
-        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
-        for (Orders order : orders) {
-            final List<FindOrderItemResponse> findOrderItemResponses =
-                    orderItemService.findAllByOrderIdForAdmin(order.getId());
-            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
-            findOrderResponses.add(findOrderResponse);
-        }
+        List<FindOrderResponse> findOrderResponses = orderService.addOrderResponse(orders);
         return findOrderResponses;
     }
 
@@ -46,15 +39,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     public List<FindOrderResponse> findAllCancelOrderRequestsForAdmin() {
         final List<Orders> orders = orderRepository.findByOrderStatusRefundOrOrderStatusExchange(ORDER_REFUND_REQUESTED,
                 ORDER_EXCHANGE_REQUESTED);
-        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
-        for (Orders order : orders) {
-            final List<FindOrderItemResponse> findOrderItemResponses =
-                    orderItemService.findAllByOrderIdForAdmin(order.getId());
-            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
-            findOrderResponses.add(findOrderResponse);
-        }
+        List<FindOrderResponse> findOrderResponses = orderService.addOrderResponse(orders);
         return findOrderResponses;
     }
+
 
     @Override
     public FindOrderForAdminResponse findOrderForAdmin(final UUID orderId) {
