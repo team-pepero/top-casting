@@ -1,6 +1,7 @@
 package com.ll.topcastingbe.domain.order.controller.order_item;
 
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.member.repository.MemberRepository;
 import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.order.dto.order_item.FindOrderItemDto;
 import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
@@ -23,13 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderItemController {
     private final MemberService memberService;
     private final OrderItemService orderItemService;
+    private final MemberRepository memberRepository;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/order-item/{orderId}")
     public ResponseEntity<List<FindOrderItemDto>> orderItemFindAll(@PathVariable("orderId") final UUID orderId,
                                                                    @AuthenticationPrincipal final UserDetails userDetails) {
 
-        final Member member = memberService.findMember(userDetails.getUsername());
+        final Member member = memberRepository.findById(1L).get();
         final List<FindOrderItemResponse> findOrderItemResponse = orderItemService.findAllByOrderId(orderId, member);
         final List<FindOrderItemDto> findOrderItemDto = FindOrderItemDto.ofList(findOrderItemResponse);
 

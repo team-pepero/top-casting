@@ -59,4 +59,8 @@ public class Orders extends BaseEntity {
     public void modifyOrder(final ModifyOrderRequest modifyOrderRequest) {
         this.orderStatus = OrderStatus.checkOrderStatus(modifyOrderRequest.orderStatus());
     }
+
+    public void modifyOrderStatus(final OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }

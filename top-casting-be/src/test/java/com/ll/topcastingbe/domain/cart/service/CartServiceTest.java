@@ -1,17 +1,7 @@
 package com.ll.topcastingbe.domain.cart.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import com.ll.topcastingbe.domain.item.domain.Item;
-import com.ll.topcastingbe.domain.item.repository.ItemRepository;
-import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.repository.MemberRepository;
-import com.ll.topcastingbe.domain.option.entity.Option;
 import com.ll.topcastingbe.domain.option.repository.OptionRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
