@@ -51,7 +51,7 @@ public class Orders extends BaseEntity {
     private Long totalItemPrice;
 
     public void checkAuthorizedMember(final Member member) {
-        if (!Objects.equals(this.member, member)) {
+        if (!Objects.equals(this.member.getId(), member.getId())) {
             throw new AuthException(ErrorMessage.UNAUTHORIZED_USER);
         }
     }

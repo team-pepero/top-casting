@@ -38,8 +38,8 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<?> itemAdd(@RequestBody ItemCreateRequestDto itemRequestDto) {
 
-        log.info("itemRequestDto={}",itemRequestDto);
-        log.info("itemColors={}",itemRequestDto.getItemColors());
+        log.info("itemRequestDto={}", itemRequestDto);
+        log.info("itemColors={}", itemRequestDto.getItemColors());
 
         //Todo:이미지 업로드 기능 구현
         Long itemId = itemService.saveItem(itemRequestDto);
@@ -70,5 +70,19 @@ public class ItemController {
     public ResponseEntity<?> searchSort(Pageable pageable) {
         Slice<SearchItemDto> sortItemResult = itemSearchService.sortSearch(pageable);
         return ResponseEntity.ok().body(sortItemResult);
+    }
+
+    @GetMapping(params = "maincategory")
+    public ResponseEntity<?> mainCategoryItems(@RequestParam(value = "maincategory") Long id,
+                                               Pageable pageable) {
+        Slice<SearchItemDto> mainCategoryItem = itemSearchService.getItemsByMainCategory(pageable, id);
+        return ResponseEntity.ok().body(mainCategoryItem);
+    }
+
+    @GetMapping(params = "subcategory")
+    public ResponseEntity<?> subCategoryItems(@RequestParam(value = "subcategory") Long id,
+                                              Pageable pageable) {
+        Slice<SearchItemDto> subCategoryItem = itemSearchService.getItemsBySubcategory(pageable, id);
+        return ResponseEntity.ok().body(subCategoryItem);
     }
 }

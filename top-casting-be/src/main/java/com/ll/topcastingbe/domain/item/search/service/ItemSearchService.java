@@ -67,6 +67,7 @@ public class ItemSearchService {
         return itemList.stream()
                 .map(item -> {
                     SearchItemDto searchItemDto = new SearchItemDto();
+                    searchItemDto.setItemId(item.getId());
                     searchItemDto.setItemName(item.getItemName());
                     searchItemDto.setItemPrice(item.getItemPrice());
                     searchItemDto.setImageUrl(item.getImage().getPath());
