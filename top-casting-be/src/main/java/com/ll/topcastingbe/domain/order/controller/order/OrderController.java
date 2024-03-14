@@ -38,7 +38,7 @@ public class OrderController {
     private final AdminOrderService adminOrderService;
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/order")
+    @PostMapping("/orders")
     public ResponseEntity<AddOrderResponseDto> orderAdd(@Valid @RequestBody final AddOrderDto addOrderDto,
                                                         @AuthenticationPrincipal final PrincipalDetails principalDetails) {
         final Member member = principalDetails.getMember();
@@ -51,7 +51,7 @@ public class OrderController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/orders/{orderId}")
     public ResponseEntity<FindOrderDto> orderFind(@PathVariable("orderId") final UUID orderId,
                                                   @AuthenticationPrincipal final PrincipalDetails principalDetails) {
         final Member member = principalDetails.getMember();
@@ -71,7 +71,7 @@ public class OrderController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/order/{orderId}")
+    @DeleteMapping("/orders/{orderId}")
     public ResponseEntity<List<FindOrderDto>> orderRemove(@PathVariable("orderId") final UUID orderId,
                                                           @AuthenticationPrincipal final PrincipalDetails principalDetails) {
         final Member member = principalDetails.getMember();
@@ -106,7 +106,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/order/{orderId}")
+    @GetMapping("/admin/orders/{orderId}")
     public ResponseEntity<FindOrderForAdminDto> orderFindForAdmin(@PathVariable("orderId") final UUID orderId) {
         FindOrderForAdminResponse findOrderForAdminResponse = adminOrderService.findOrderForAdmin(orderId);
         final FindOrderForAdminDto findOrderForAdminDto = FindOrderForAdminDto.of(findOrderForAdminResponse);
