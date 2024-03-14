@@ -5,12 +5,9 @@ import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.AddOrderResponseDto;
 import com.ll.topcastingbe.domain.order.dto.order.FindOrderDto;
-import com.ll.topcastingbe.domain.order.dto.order.FindOrderForAdminDto;
 import com.ll.topcastingbe.domain.order.dto.order.RequestCancelOrderDto;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
-import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
-import com.ll.topcastingbe.domain.order.service.order.AdminOrderService;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import com.ll.topcastingbe.global.security.auth.PrincipalDetails;
 import jakarta.validation.Valid;
@@ -35,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class OrderController {
     private final OrderService orderService;
-    private final AdminOrderService adminOrderService;
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/orders")
@@ -89,28 +85,4 @@ public class OrderController {
         orderService.requestCancelOrder(orderId, requestCancelOrderRequest, member);
         return ResponseEntity.ok().build();
     }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/orders/refund")
-    public ResponseEntity<List<FindOrderDto>> cancelOrderRequestsFindAllForAdmin() {
-        List<FindOrderResponse> findOrderResponses = adminOrderService.findAllCancelOrderRequestsForAdmin();
-        List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(findOrderResponses);
-        return ResponseEntity.ok().body(findOrderDtos);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/orders")
-    public ResponseEntity<List<FindOrderDto>> orderFindAllForAdmin() {
-        final List<FindOrderDto> findOrderDtos = FindOrderDto.ofList(adminOrderService.findOrderListForAdmin());
-        return ResponseEntity.ok(findOrderDtos);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/admin/orders/{orderId}")
-    public ResponseEntity<FindOrderForAdminDto> orderFindForAdmin(@PathVariable("orderId") final UUID orderId) {
-        FindOrderForAdminResponse findOrderForAdminResponse = adminOrderService.findOrderForAdmin(orderId);
-        final FindOrderForAdminDto findOrderForAdminDto = FindOrderForAdminDto.of(findOrderForAdminResponse);
-        return ResponseEntity.ok(findOrderForAdminDto);
-    }
-
 }
