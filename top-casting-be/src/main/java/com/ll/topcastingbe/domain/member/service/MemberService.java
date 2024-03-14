@@ -3,7 +3,7 @@ package com.ll.topcastingbe.domain.member.service;
 import com.ll.topcastingbe.domain.cart.entity.Cart;
 import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.cart.repository.CartRepository;
-import com.ll.topcastingbe.domain.member.dto.AddtionalInfoRequestDto;
+import com.ll.topcastingbe.domain.member.dto.AdditionalInfoRequestDto;
 import com.ll.topcastingbe.domain.member.dto.JoinRequestDto;
 import com.ll.topcastingbe.domain.member.dto.MemberInfoResponseDto;
 import com.ll.topcastingbe.domain.member.entity.Address;
@@ -104,7 +104,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void saveAdditionalInfo(String name, AddtionalInfoRequestDto requestDto) {
+    public void saveAdditionalInfo(String name, AdditionalInfoRequestDto requestDto) {
         Member findMember = memberRepository.findByUsername(name);
         if (findMember == null) {
             return;

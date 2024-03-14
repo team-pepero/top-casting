@@ -1,12 +1,11 @@
 package com.ll.topcastingbe.domain.member.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class AddtionalInfoRequestDto {
+public class AdditionalInfoRequestDto {
 
     @NotNull
     private String nickname;

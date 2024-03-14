@@ -1,6 +1,6 @@
 package com.ll.topcastingbe.domain.member.controller;
 
-import com.ll.topcastingbe.domain.member.dto.AddtionalInfoRequestDto;
+import com.ll.topcastingbe.domain.member.dto.AdditionalInfoRequestDto;
 import com.ll.topcastingbe.domain.member.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
@@ -35,7 +35,7 @@ public class SocialMemberController {
     @PreAuthorize("isAuthenticated()")
     @ResponseBody
     @PostMapping("/api/v1/auth/socialLogin/additionalInfo")
-    public ResponseEntity<?> additionalInfo(@RequestBody @Valid AddtionalInfoRequestDto requestDto,
+    public ResponseEntity<?> additionalInfo(@RequestBody @Valid AdditionalInfoRequestDto requestDto,
                                             Principal principal) {
         memberService.saveAdditionalInfo(principal.getName(), requestDto);
         return ResponseEntity.status(HttpStatus.OK).build();
