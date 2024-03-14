@@ -1,6 +1,8 @@
 package com.ll.topcastingbe.global.security.auth;
 
+import com.ll.topcastingbe.domain.member.dto.oauth2.FaceBookResponse;
 import com.ll.topcastingbe.domain.member.dto.oauth2.GoogleResponse;
+import com.ll.topcastingbe.domain.member.dto.oauth2.KakaoResponse;
 import com.ll.topcastingbe.domain.member.dto.oauth2.NaverResponse;
 import com.ll.topcastingbe.domain.member.dto.oauth2.OAuth2Response;
 import com.ll.topcastingbe.domain.member.entity.Member;
@@ -29,10 +31,22 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         if (registrationId.equals("naver")) {
 
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+
         } else if (registrationId.equals("google")) {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        } else {
+
+        } else if(registrationId.equals("facebook")){
+
+            oAuth2Response = new FaceBookResponse(oAuth2User.getAttributes());
+
+        } else if(registrationId.equals("kakao")){
+
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+
+        }
+
+        else {
 
             return null;
         }
