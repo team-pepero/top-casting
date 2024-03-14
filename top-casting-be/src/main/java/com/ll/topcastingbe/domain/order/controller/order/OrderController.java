@@ -72,8 +72,8 @@ public class OrderController {
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<List<FindOrderDto>> orderRemove(@PathVariable("orderId") final UUID orderId,
-                                                          @AuthenticationPrincipal final PrincipalDetails principalDetails) {
+    public ResponseEntity<Void> orderRemove(@PathVariable("orderId") final UUID orderId,
+                                            @AuthenticationPrincipal final PrincipalDetails principalDetails) {
         final Member member = principalDetails.getMember();
         orderService.removeOrder(orderId, member);
         return ResponseEntity.noContent().build();
