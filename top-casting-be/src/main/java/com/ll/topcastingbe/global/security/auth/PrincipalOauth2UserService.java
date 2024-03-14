@@ -62,7 +62,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                              .name(oAuth2Response.getName())
                              .nickname(oAuth2Response.getName())
                              .email(oAuth2Response.getEmail())
-                             .roles("ROLE_USER")
+                             .roles("ROLE_SOCIALUSER")
                              .build();
 
             memberRepository.save(member);
