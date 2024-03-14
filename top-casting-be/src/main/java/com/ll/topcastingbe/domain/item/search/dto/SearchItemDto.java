@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Data
 public class SearchItemDto {
+    private Long itemId;
     private String itemName;
     private BigDecimal itemPrice;
     private String imageUrl;
