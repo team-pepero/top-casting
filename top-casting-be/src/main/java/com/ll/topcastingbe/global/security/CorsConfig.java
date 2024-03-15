@@ -17,7 +17,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*"); // 모든 header에 응답을 허용하겠다.
         config.addAllowedMethod("*"); // 모든 post, get, delete, patch 요청을 허용하겠다.
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         config.addExposedHeader("Authorization"); // 리액트에서 헤더값 받아오기 위해서 추가
         return new CorsFilter(source);
     }
