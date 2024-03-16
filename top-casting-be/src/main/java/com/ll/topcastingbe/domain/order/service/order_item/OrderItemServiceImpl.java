@@ -36,18 +36,11 @@ public class OrderItemServiceImpl implements OrderItemService {
         final CartItem cartItem = cartItemRepository.findById(addOrderItemRequest.cartItemId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
 
-        final Option option = Option.builder()
-                .item(cartItem.getOption().getItem())
-                .colorName(cartItem.getOption().getColorName())
-                .stock(cartItem.getOption().getStock())
-                .build();
-        optionRepository.save(option);
-
         final OrderItem orderItem = OrderItem.builder()
                 .order(order)
-                .option(option)
+                .option(cartItem.getOption())
                 .itemQuantity(addOrderItemRequest.itemQuantity())
-                .totalPrice(getTotalPrice(option, addOrderItemRequest)).build();
+                .totalPrice(getTotalPrice(cartItem.getOption(), addOrderItemRequest)).build();
 
         orderItemRepository.save(orderItem);
     }
