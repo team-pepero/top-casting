@@ -1,6 +1,5 @@
 package com.ll.topcastingbe.domain.member.controller;
 
-import com.ll.topcastingbe.domain.cart.dto.CartItemListResponseDto;
 import com.ll.topcastingbe.domain.member.dto.MemberDetailsResponseDto;
 import com.ll.topcastingbe.domain.member.dto.MemberModifyRequestDto;
 import com.ll.topcastingbe.domain.member.exception.PasswordAndPasswordCheckNotMatchException;
@@ -12,12 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,16 +28,17 @@ public class MemberDetailController {
     private final MemberService memberService;
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{memberId}")
-    public ResponseEntity<?> memberDetails(@AuthenticationPrincipal PrincipalDetails principal,
-                                                 @PathVariable Long memberId) {
-        return ResponseEntity.ok(MemberDetailsResponseDto.toDto(principal.getMember()));
+    @GetMapping("")
+    public ResponseEntity<?> memberDetails(@AuthenticationPrincipal PrincipalDetails principal) {
+        final MemberDetailsResponseDto t = MemberDetailsResponseDto.toDto(principal.getMember());
+//        return ResponseEntity.ok(MemberDetailsResponseDto.toDto(principal.getMember()));
+        return ResponseEntity.ok(t);
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PatchMapping("/{memberId}")
+    @PatchMapping("")
     public ResponseEntity<?> memberDetailsModify(@AuthenticationPrincipal PrincipalDetails principal,
-                                                 @PathVariable Long memberId,
+//                                                 @PathVariablㅌe Long memberId,//PathVariable필요없음 있으면 500err남
                                                  @RequestBody @Valid MemberModifyRequestDto memberModifyDto) {
 
         //패스워드와 패스워드 확인이 일치하는지 체크
