@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
@@ -140,6 +141,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Async("threadPoolTaskExecutor")
+    @Retryable
     public CompletableFuture<String> deductStockForOrder(final Orders order) {
 
         List<OrderItem> orderItems = orderItemService.findOrderItemsWithPessimisticWriteLock(order);
