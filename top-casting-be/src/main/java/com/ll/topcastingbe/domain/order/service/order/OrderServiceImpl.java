@@ -22,13 +22,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
+@EnableAsync
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
@@ -130,6 +136,22 @@ public class OrderServiceImpl implements OrderService {
                 .mapToLong(OrderItem::getTotalPrice)
                 .sum();
         return totalItemPrice;
+    }
+
+    @Transactional
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<String> deductStockForOrder(final Orders order) {
+
+        List<OrderItem> orderItems = orderItemService.findOrderItemsWithPessimisticWriteLock(order);
+        for (OrderItem orderItem : orderItems) {
+            long newStock = orderItem.getOption().getStock() - orderItem.getItemQuantity();
+            if (newStock < 0) {
+                log.info("{}", "error");
+                throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
+            }
+            orderItem.getOption().deductionStock(orderItem.getItemQuantity());
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     private void checkTotalItemPrice(final Orders order) {

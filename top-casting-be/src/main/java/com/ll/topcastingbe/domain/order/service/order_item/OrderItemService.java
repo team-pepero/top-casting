@@ -24,4 +24,6 @@ public interface OrderItemService {
     List<FindOrderItemResponse> findAllByOrderIdForAdmin(final UUID orderId);
 
     List<OrderItem> findOrderItems(final Orders order);
+
+    List<OrderItem> findOrderItemsWithPessimisticWriteLock(final Orders order);
 }
