@@ -40,6 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
         paymentRepository.save(payment);
 
         int statusCode = requestPaymentAccept(paymentKey, price, orderId);
+        orderService.deductStockForOrder(order);
         if (statusCode == HttpStatus.OK.value()) {
             order.modifyOrderStatus(OrderStatus.SHIPPING);
         }
