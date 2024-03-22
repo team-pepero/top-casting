@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,8 @@ public class PaymentServiceImpl implements PaymentService {
     //
     @Override
     @Transactional
+    @Async("PaymentThreadPoolTaskExecutor")
+    @Retryable
     public AddTossPaymentResponse addPayment(final UUID orderId, final String paymentKey, final Long price) {
         final Orders order = orderService.findByOrderId(orderId);
         checkOrderPrice(order, price);
