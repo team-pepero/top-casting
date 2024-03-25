@@ -6,6 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,10 +21,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class SocialMemberController {
     private final MemberService memberService;
+    @Value("${custom.site.front_url}")
+    private String frontUrl;
 
     @GetMapping("/socialLogin/{providerTypeCode}")
     public String socialLogin(String redirectUrl, @PathVariable String providerTypeCode) {
-        if (redirectUrl.startsWith("http://localhost:3000")) {
+        if (redirectUrl.startsWith(frontUrl)) {
             Cookie cookie = new Cookie("redirectUrlAfterSocialLogin", redirectUrl);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 10);

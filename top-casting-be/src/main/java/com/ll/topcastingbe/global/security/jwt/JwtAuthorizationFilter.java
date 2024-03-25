@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private MemberRepository memberRepository;
     private JwtProps jwtProps;
     private RefreshTokenRepository refreshTokenRepository;
+
+    @Value("${custom.site.front_url}")
+    private String frontUrl;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository,
                                   JwtProps jwtProps, RefreshTokenRepository refreshTokenRepository) {
@@ -82,7 +86,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             } catch (JWTVerificationException ee) {
                 //검증 실패시 uncheck
                 findRefreshToken.uncheck();
-                response.sendRedirect("http://localhost:3000/login");
+                response.sendRedirect(frontUrl+"/login");
                 chain.doFilter(request, response);
                 return;
             }

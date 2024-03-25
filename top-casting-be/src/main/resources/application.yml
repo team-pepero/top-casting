@@ -34,3 +34,8 @@ logging:
 delivery:
   fee: 2500
 
+custom:
+  site:
+    front_url: http://localhost:3000
+    back_url: http://localhost:8080
+
