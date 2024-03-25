@@ -40,20 +40,20 @@ INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_C
 INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (default,'사파이어103',12000,5,5,1,1,NOW(),NOW());
 
 --itemId 1번의 옵션 5개
-insert into option (id,item_id,color_name,stock) values (default,1,'A390',100);
-insert into option (id,item_id,color_name,stock) values (default,1,'A027',200);
-insert into option (id,item_id,color_name,stock) values (default,1,'A026',300);
-insert into option (id,item_id,color_name,stock) values (default,1,'A028',400);
-insert into option (id,item_id,color_name,stock) values (default,1,'F1104',500);
+insert into options (id,item_id,color_name,stock) values (default,1,'A390',100);
+insert into options (id,item_id,color_name,stock) values (default,1,'A027',200);
+insert into options (id,item_id,color_name,stock) values (default,1,'A026',300);
+insert into options (id,item_id,color_name,stock) values (default,1,'A028',400);
+insert into options (id,item_id,color_name,stock) values (default,1,'F1104',500);
 --itemId 2번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,2,'B390',100); --6
-insert into option (id,item_id,color_name,stock) values (default,2,'B655',200);
+insert into options (id,item_id,color_name,stock) values (default,2,'B390',100); --6
+insert into options (id,item_id,color_name,stock) values (default,2,'B655',200);
 --itemId 3번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,3,'91-001',100); --8
-insert into option (id,item_id,color_name,stock) values (default,3,'91-002',200);
+insert into options (id,item_id,color_name,stock) values (default,3,'91-001',100); --8
+insert into options (id,item_id,color_name,stock) values (default,3,'91-002',200);
 --itemId 4번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,4,'F1631',100); --10
-insert into option (id,item_id,color_name,stock) values (default,4,'F1632',200);
+insert into options (id,item_id,color_name,stock) values (default,4,'F1631',100); --10
+insert into options (id,item_id,color_name,stock) values (default,4,'F1632',200);
 --itemId 5번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,5,'103-001',100); --12
-insert into option (id,item_id,color_name,stock) values (default,5,'103-002',200);
+insert into options (id,item_id,color_name,stock) values (default,5,'103-001',100); --12
+insert into options (id,item_id,color_name,stock) values (default,5,'103-002',200);
