@@ -47,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         addOrderItem(order, addOrderRequest);
-        checkTotalItemPrice(order);
         final AddOrderResponse addOrderResponse = AddOrderResponse.of(order);
         return addOrderResponse;
     }
