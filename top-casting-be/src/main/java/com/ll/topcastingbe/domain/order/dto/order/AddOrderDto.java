@@ -2,6 +2,8 @@ package com.ll.topcastingbe.domain.order.dto.order;
 
 import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order_item.AddOrderItemDto;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;

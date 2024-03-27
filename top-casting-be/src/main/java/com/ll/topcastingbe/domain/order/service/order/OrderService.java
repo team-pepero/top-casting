@@ -5,11 +5,11 @@ import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
-import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.entity.Orders;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface OrderService {
     AddOrderResponse addOrder(final AddOrderRequest addOrderRequest, final Member member);
@@ -29,9 +29,9 @@ public interface OrderService {
     void requestCancelOrder(final UUID orderId, final RequestCancelOrderRequest requestCancelOrderRequest,
                             final Member member);
 
-    List<FindOrderResponse> findOrderListForAdmin();
+    List<FindOrderResponse> addOrderResponse(final List<Orders> orders);
 
-    List<FindOrderResponse> findAllCancelOrderRequestsForAdmin();
+    Long getTotalItemPrice(final Orders order);
 
-    FindOrderForAdminResponse findOrderForAdmin(final UUID orderId);
+    CompletableFuture<String> deductStockForOrder(final Orders order);
 }

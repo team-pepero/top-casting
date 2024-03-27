@@ -3,40 +3,42 @@ package com.ll.topcastingbe.domain.order.service.order;
 import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_EXCHANGE_REQUESTED;
 import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_REFUND_REQUESTED;
 
-import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.ModifyOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.request.RequestCancelOrderRequest;
 import com.ll.topcastingbe.domain.order.dto.order.response.AddOrderResponse;
-import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderForAdminResponse;
 import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.dto.order_item.response.FindOrderItemResponse;
+import com.ll.topcastingbe.domain.order.entity.OrderItem;
 import com.ll.topcastingbe.domain.order.entity.OrderStatus;
 import com.ll.topcastingbe.domain.order.entity.Orders;
+import com.ll.topcastingbe.domain.order.exception.BusinessException;
 import com.ll.topcastingbe.domain.order.exception.EntityNotFoundException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.repository.order.OrderRepository;
-import com.ll.topcastingbe.domain.order.repository.order_item.OrderItemRepository;
 import com.ll.topcastingbe.domain.order.service.order_item.OrderItemService;
-import com.ll.topcastingbe.domain.payment.entity.Payment;
-import com.ll.topcastingbe.domain.payment.repository.PaymentRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
+@EnableAsync
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemService orderItemService;
-    private final CartItemRepository cartItemRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final PaymentRepository paymentRepository;
 
     @Override
     @Transactional
@@ -45,7 +47,6 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         addOrderItem(order, addOrderRequest);
-
         final AddOrderResponse addOrderResponse = AddOrderResponse.of(order);
         return addOrderResponse;
     }
@@ -65,16 +66,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<FindOrderResponse> findOrderList(final Member member) {
         final List<Orders> orders = orderRepository.findAllByMember(member);
-
-        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
-        for (Orders order : orders) {
-            final List<FindOrderItemResponse> findOrderItemResponses =
-                    orderItemService.findAllByOrderId(order.getId(), member);
-            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
-            findOrderResponses.add(findOrderResponse);
-
-        }
-
+        List<FindOrderResponse> findOrderResponses = addOrderResponse(orders);
         return findOrderResponses;
     }
 
@@ -113,19 +105,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<FindOrderResponse> findOrderListForAdmin() {
-        final List<Orders> orders = orderRepository.findAll();
-        List<FindOrderResponse> findOrderResponses = new ArrayList<>();
-        for (Orders order : orders) {
-            final List<FindOrderItemResponse> findOrderItemResponses =
-                    orderItemService.findAllByOrderIdForAdmin(order.getId());
-            final FindOrderResponse findOrderResponse = FindOrderResponse.of(order, findOrderItemResponses);
-            findOrderResponses.add(findOrderResponse);
-        }
-        return findOrderResponses;
-    }
-
-    @Override
     @Transactional
     public void requestCancelOrder(final UUID orderId,
                                    final RequestCancelOrderRequest requestCancelOrderRequest,
@@ -139,11 +118,9 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
-    public List<FindOrderResponse> findAllCancelOrderRequestsForAdmin() {
-        final List<Orders> orders = orderRepository.findByOrderStatusRefundOrOrderStatusExchange(ORDER_REFUND_REQUESTED,
-                ORDER_EXCHANGE_REQUESTED);
+    public List<FindOrderResponse> addOrderResponse(final List<Orders> orders) {
         List<FindOrderResponse> findOrderResponses = new ArrayList<>();
+
         for (Orders order : orders) {
             final List<FindOrderItemResponse> findOrderItemResponses =
                     orderItemService.findAllByOrderIdForAdmin(order.getId());
@@ -153,16 +130,36 @@ public class OrderServiceImpl implements OrderService {
         return findOrderResponses;
     }
 
-    @Override
-    public FindOrderForAdminResponse findOrderForAdmin(final UUID orderId) {
-        final Orders order = findByOrderId(orderId);
-        final Payment payment = paymentRepository.findByOrder(order)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
-        final List<FindOrderItemResponse> findOrderItemResponses =
-                orderItemService.findAllByOrderIdForAdmin(order.getId());
-        final FindOrderForAdminResponse findOrderForAdminResponse
-                = FindOrderForAdminResponse.of(order, findOrderItemResponses, payment.getPaymentKey());
-        return findOrderForAdminResponse;
+    public Long getTotalItemPrice(final Orders order) {
+        final List<OrderItem> orderItems = orderItemService.findOrderItems(order);
+        Long totalItemPrice = orderItems.stream()
+                .mapToLong(OrderItem::getTotalPrice)
+                .sum();
+        return totalItemPrice;
+    }
+
+    @Transactional
+    @Async("threadPoolTaskExecutor")
+    @Retryable
+    public CompletableFuture<String> deductStockForOrder(final Orders order) {
+
+        List<OrderItem> orderItems = orderItemService.findOrderItemsWithPessimisticWriteLock(order);
+        for (OrderItem orderItem : orderItems) {
+            long newStock = orderItem.getOption().getStock() - orderItem.getItemQuantity();
+            if (newStock < 0) {
+                log.info("{}", "error");
+                throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
+            }
+            orderItem.getOption().deductionStock(orderItem.getItemQuantity());
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private void checkTotalItemPrice(final Orders order) {
+        Long totalItemPrice = getTotalItemPrice(order);
+        if (!Objects.equals(totalItemPrice, order.getTotalItemPrice())) {
+            throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
+        }
     }
 
     private void addOrderItem(final Orders order, final AddOrderRequest addOrderRequest) {
