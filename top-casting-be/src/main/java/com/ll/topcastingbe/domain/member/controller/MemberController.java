@@ -52,7 +52,6 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@CookieValue(name = "RefreshToken") String refreshToken) {
-        System.out.println(refreshToken);
         refreshTokenService.expireToken(refreshToken);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

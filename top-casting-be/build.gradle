@@ -25,7 +25,7 @@ dependencies {
     //SPRING-DATA-JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     //Oauth2
-    //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //SECURITY
     implementation 'org.springframework.boot:spring-boot-starter-security'
     //VALIDATION

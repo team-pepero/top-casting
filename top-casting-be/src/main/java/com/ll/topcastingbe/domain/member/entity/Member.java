@@ -68,4 +68,13 @@ public class Member {
         this.address = address;
         this.phoneNumber = phoneNumber;
     }
+
+    public void changeDetailsForSicailLogin(String nickname, Address address, String phoneNumber, LocalDate birthDate) {
+        this.nickname = nickname;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+    }
+
+
 }
