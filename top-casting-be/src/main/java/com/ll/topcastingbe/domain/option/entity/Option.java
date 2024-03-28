@@ -28,4 +28,8 @@ public class Option {
 
 	private String colorName;
 	private int stock;
+
+	public void deductionStock(Long itemQuantity) {
+		this.stock -= itemQuantity;
+	}
 }
