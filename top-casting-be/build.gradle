@@ -44,10 +44,15 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     //TEST
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     // jwt
     // Java JWT 라이브러리 추가
     implementation 'com.auth0:java-jwt:3.10.2'
+    //email
+    implementation 'javax.mail:mail:1.4.7'
+    // Spring Context Support
+    implementation 'org.springframework:spring-context-support:5.3.9'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.6.3'
 }
 
 tasks.named('test') {
