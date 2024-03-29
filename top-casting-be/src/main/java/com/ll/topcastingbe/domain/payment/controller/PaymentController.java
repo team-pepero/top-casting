@@ -1,6 +1,5 @@
 package com.ll.topcastingbe.domain.payment.controller;
 
-import com.ll.topcastingbe.domain.payment.dto.AddTossPaymentDto;
 import com.ll.topcastingbe.domain.payment.service.PaymentService;
 import java.io.IOException;
 import java.util.UUID;
@@ -19,12 +18,12 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/payment/toss/success")
-    public ResponseEntity<AddTossPaymentDto> tossPaymentSuccess(
+    public ResponseEntity<Void> tossPaymentSuccess(
             @RequestParam(name = "paymentKey") final String paymentKey,
             @RequestParam(name = "orderId") final UUID orderId, @RequestParam(name = "amount") final Long amount)
             throws IOException, InterruptedException {
-        AddTossPaymentDto addTossPaymentDto = AddTossPaymentDto.of(
-                paymentService.addPayment(orderId, paymentKey, amount));
-        return ResponseEntity.ok(addTossPaymentDto);
+
+        paymentService.addPayment(orderId, paymentKey, amount);
+        return ResponseEntity.ok().build();
     }
 }

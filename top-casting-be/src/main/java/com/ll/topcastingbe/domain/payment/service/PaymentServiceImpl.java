@@ -7,6 +7,7 @@ import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.order.service.order.OrderService;
 import com.ll.topcastingbe.domain.payment.dto.response.AddTossPaymentResponse;
 import com.ll.topcastingbe.domain.payment.entity.Payment;
+import com.ll.topcastingbe.domain.payment.event.OrderMailEvent;
 import com.ll.topcastingbe.domain.payment.repository.PaymentRepository;
 import java.io.IOException;
 import java.net.URI;
@@ -15,7 +16,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
@@ -29,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderService orderService;
     private final PaymentRepository paymentRepository;
     private final TossPaymentConfig tossPaymentConfig;
+    private final ApplicationEventPublisher eventPublisher;
 
     //todo ErrorMessage추가
     //
@@ -36,7 +40,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Async("PaymentThreadPoolTaskExecutor")
     @Retryable
-    public AddTossPaymentResponse addPayment(final UUID orderId, final String paymentKey, final Long price) {
+    public CompletableFuture<AddTossPaymentResponse> addPayment(final UUID orderId, final String paymentKey,
+                                                                final Long price) {
         final Orders order = orderService.findByOrderId(orderId);
         checkOrderPrice(order, price);
 
@@ -50,7 +55,10 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         final AddTossPaymentResponse tossPaymentResponse = AddTossPaymentResponse.of(payment);
-        return tossPaymentResponse;
+        CompletableFuture<AddTossPaymentResponse> tossPaymentResponseCompletableFuture = CompletableFuture.completedFuture(
+                tossPaymentResponse);
+        eventPublisher.publishEvent(new OrderMailEvent(order.getId()));
+        return tossPaymentResponseCompletableFuture;
     }
 
     public Payment createPayment(final Orders order, final Long price, final String paymentKey) {

@@ -15,5 +15,9 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Query("SELECT oi FROM OrderItem oi WHERE oi.order = :order")
     List<OrderItem> findAllByOrderWithPessimisticWriteLock(final Orders order);
 
+    @Lock(LockModeType.PESSIMISTIC_READ)
+    @Query("SELECT oi FROM OrderItem oi JOIN FETCH oi.option WHERE oi.order = :order")
+    List<OrderItem> findAllByOrderWithOptionAndPessimisticWriteLock(final Orders order);
+
     void removeAllByOrder(final Orders order);
 }
