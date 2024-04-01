@@ -9,6 +9,7 @@ import com.ll.topcastingbe.global.security.oauth2.CustomSuccessHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -38,6 +39,9 @@ public class ApiSecurityConfig {
     private final PrincipalOauth2UserService oauth2UserService;
     private final CustomSuccessHandler successHandler;
 
+    @Value("${custom.site.front_url}")
+    private String frontUrl;
+
 
     @Bean //@Bean - 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해줌
     public BCryptPasswordEncoder encodePwd() {
@@ -60,7 +64,7 @@ public class ApiSecurityConfig {
                                       CorsConfiguration configuration = new CorsConfiguration();
 
                                       configuration.setAllowedOrigins(
-                                              Collections.singletonList("http://localhost:3000"));
+                                              Collections.singletonList(frontUrl));
                                       configuration.setAllowedMethods(Collections.singletonList("*"));
                                       configuration.setAllowCredentials(true);
                                       configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -105,7 +109,6 @@ public class ApiSecurityConfig {
                                                                       userInfoEndpointConfig.userService(
                                                                               oauth2UserService)))
                                         .successHandler(successHandler)
-                                        .failureUrl("http://localhost:8080/fail")
                 )
 //                .addFilter(corsFilter) // 컨트롤러 - @CrossOrigin(인증 x), 필터에 등록 (인증 o)
                 .addFilter(
