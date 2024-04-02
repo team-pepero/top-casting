@@ -45,11 +45,10 @@ public class PaymentServiceImpl implements PaymentService {
         final Orders order = orderService.findByOrderId(orderId);
         checkOrderPrice(order, price);
 
+        orderService.deductStockForOrder(order);
         final Payment payment = createPayment(order, price, paymentKey);
         paymentRepository.save(payment);
-
         int statusCode = requestPaymentAccept(paymentKey, price, orderId);
-        orderService.deductStockForOrder(order);
         if (statusCode == HttpStatus.OK.value()) {
             order.modifyOrderStatus(OrderStatus.SHIPPING);
         }

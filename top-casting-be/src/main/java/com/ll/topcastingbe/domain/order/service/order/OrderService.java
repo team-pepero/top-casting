@@ -9,7 +9,6 @@ import com.ll.topcastingbe.domain.order.dto.order.response.FindOrderResponse;
 import com.ll.topcastingbe.domain.order.entity.Orders;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public interface OrderService {
     AddOrderResponse addOrder(final AddOrderRequest addOrderRequest, final Member member);
@@ -33,5 +32,5 @@ public interface OrderService {
 
     Long getTotalItemPrice(final Orders order);
 
-    CompletableFuture<String> deductStockForOrder(final Orders order);
+    void deductStockForOrder(final Orders order);
 }

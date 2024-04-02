@@ -24,14 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -142,10 +138,9 @@ public class OrderServiceImpl implements OrderService {
         return totalItemPrice;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Async("threadPoolTaskExecutor")
-    @Retryable
-    public CompletableFuture<String> deductStockForOrder(final Orders order) {
+    //todo 책임 나눠야함(재고체크 / 재고감소)
+    @Transactional
+    public void deductStockForOrder(final Orders order) {
 
         List<OrderItem> orderItems = orderItemService.findOrderItemsWithPessimisticWriteLock(order);
         for (OrderItem orderItem : orderItems) {
@@ -156,7 +151,6 @@ public class OrderServiceImpl implements OrderService {
             }
             orderItem.getOption().deductionStock(orderItem.getItemQuantity());
         }
-        return CompletableFuture.completedFuture(null);
     }
 
     private void checkTotalItemPrice(final Orders order) {
