@@ -2,6 +2,8 @@ package com.ll.topcastingbe.domain.order.service.order;
 
 import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_EXCHANGE_REQUESTED;
 import static com.ll.topcastingbe.domain.order.entity.OrderStatus.ORDER_REFUND_REQUESTED;
+import static com.ll.topcastingbe.global.constant.ShippingConst.FREE_SHIPPING_COND;
+import static com.ll.topcastingbe.global.constant.ShippingConst.SHIPPING_FEE;
 
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.order.dto.order.request.AddOrderRequest;
@@ -159,6 +161,9 @@ public class OrderServiceImpl implements OrderService {
 
     private void checkTotalItemPrice(final Orders order) {
         Long totalItemPrice = getTotalItemPrice(order);
+        if (totalItemPrice < FREE_SHIPPING_COND.longValue()) {
+            totalItemPrice += SHIPPING_FEE.longValue();
+        }
         if (!Objects.equals(totalItemPrice, order.getTotalItemPrice())) {
             throw new BusinessException(ErrorMessage.INVALID_INPUT_VALUE);
         }
