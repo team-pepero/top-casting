@@ -29,6 +29,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -139,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
         return totalItemPrice;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Async("threadPoolTaskExecutor")
     @Retryable
     public CompletableFuture<String> deductStockForOrder(final Orders order) {
