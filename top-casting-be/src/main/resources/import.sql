@@ -32,27 +32,12 @@ INSERT INTO DETAILED_IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VA
 
 INSERT INTO IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (DEFAULT,'https://www.topcasting.co.kr/shop/data/tntshop1/img_big/2/135_gs_img_jung.jpg','사파이어103','사파이어103',now());
 INSERT INTO DETAILED_IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (DEFAULT,'https://www.topcasting.co.kr/shop/data/tntshop1/img_body/1/9_bed3_tcs14abbf3bcbcc6e4c0ccc1f6.jpg','사파이어103','사파이어103',now());
-//
-
-INSERT INTO IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (9,'https://www.topcasting.co.kr/shop/data/tntshop1/img_tiny/1/37_gs_img_so.jpg','5인치 T-LINE(LT)','5인치 T-LINE(LT)',now());
-INSERT INTO DETAILED_IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (9,'https://www.topcasting.co.kr/shop/data/tntshop1/img_big/1/37_img_add11.jpg','5인치 T-LINE(LT)','5인치 T-LINE(LT)',now());
-
-INSERT INTO IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (10,'https://www.topcasting.co.kr/shop/data/tntshop1/img_tiny/1/38_gs_img_so.jpg','5인치 T-LINE(TD)','5인치 T-LINE(LT)',now());
-INSERT INTO DETAILED_IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (10,'https://www.topcasting.co.kr/shop/data/tntshop1/img_big/1/38_img_add11.jpg','5인치 T-LINE(TD)','5인치 T-LINE(LT)',now());
-
-INSERT INTO IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (11,'https://www.topcasting.co.kr/shop/data/tntshop1/img_tiny/1/40_gs_img_so.jpg','울트라R38C테일','울트라R38C테일',now());
-INSERT INTO DETAILED_IMAGE (ID,PATH,IMAGE_NAME,ORIGIN_FILE_NAME,CREATED_DATE) VALUES (11,'https://www.topcasting.co.kr/shop/data/tntshop1/img_big/1/40_img_add11.jpg','울트라R38C테일','울트라R38C테일',now());
-
 
 INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (default,'사파이어14A',9000,1,1,1,1,NOW(),NOW());
 INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (default,'사파이어142',10000,2,2,1,1,NOW(),NOW());
 INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (default,'사파이어91',8000,3,3,1,1,NOW(),NOW());
 INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (default,'사파이어40C',8000,4,4,1,1,NOW(),NOW());
 INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (default,'사파이어103',12000,5,5,1,1,NOW(),NOW());
-
-INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (9,'5인치 T-LINE(LT)',6000,9,9,2,6,NOW(),NOW());
-INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (10,'5인치 T-LINE(TD)',6000,10,10,2,6,NOW(),NOW());
-INSERT INTO ITEM (ID, ITEM_NAME, ITEM_PRICE, IMAGE_ID, DETAILED_IMAGE_ID, MAIN_CATEGORY_ID, SUB_CATEGORY_ID, CREATE_DATE, MODIFY_DATE) VALUES (11,'울트라R38C테일',6000,11,11,2,6,NOW(),NOW());
 
 --itemId 1번의 옵션 5개
 insert into option (id,item_id,color_name,stock) values (default,1,'A390',100);
@@ -72,15 +57,3 @@ insert into option (id,item_id,color_name,stock) values (default,4,'F1632',200);
 --itemId 5번의 옵션
 insert into option (id,item_id,color_name,stock) values (default,5,'103-001',100); --12
 insert into option (id,item_id,color_name,stock) values (default,5,'103-002',200);
-
---itemId 9번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,9,'WATERMELON SEED',100);
-insert into option (id,item_id,color_name,stock) values (default,9,'WATERMELON GOLD',200);
-
---itemId 10번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,10,'WATERMELON SEED',100);
-insert into option (id,item_id,color_name,stock) values (default,10,'WATERMELON CHART',200);
-
---itemId 11번의 옵션
-insert into option (id,item_id,color_name,stock) values (default,11,'001',100);
-insert into option (id,item_id,color_name,stock) values (default,11,'002',200);

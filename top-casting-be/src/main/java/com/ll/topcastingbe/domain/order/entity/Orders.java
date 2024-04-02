@@ -51,12 +51,16 @@ public class Orders extends BaseEntity {
     private Long totalItemPrice;
 
     public void checkAuthorizedMember(final Member member) {
-        if (!Objects.equals(this.member, member)) {
+        if (!Objects.equals(this.member.getId(), member.getId())) {
             throw new AuthException(ErrorMessage.UNAUTHORIZED_USER);
         }
     }
 
     public void modifyOrder(final ModifyOrderRequest modifyOrderRequest) {
         this.orderStatus = OrderStatus.checkOrderStatus(modifyOrderRequest.orderStatus());
+    }
+
+    public void modifyOrderStatus(final OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
     }
 }

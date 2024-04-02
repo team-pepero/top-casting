@@ -1,5 +1,7 @@
 package com.ll.topcastingbe.domain.order.service.order_item;
 
+import com.ll.topcastingbe.domain.cart.entity.CartItem;
+import com.ll.topcastingbe.domain.cart.repository.CartItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.option.entity.Option;
 import com.ll.topcastingbe.domain.option.repository.OptionRepository;
@@ -25,18 +27,20 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OptionRepository optionRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final CartItemRepository cartItemRepository;
 
     @Override
     @Transactional
+    //todo save가 두 번 호출되므로 정상적인지는 잘 모르겠음
     public void addOrderItem(Orders order, AddOrderItemRequest addOrderItemRequest) {
-        final Option option = optionRepository.findById(addOrderItemRequest.optionId())
+        final CartItem cartItem = cartItemRepository.findById(addOrderItemRequest.cartItemId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
 
         final OrderItem orderItem = OrderItem.builder()
                 .order(order)
-                .option(option)
+                .option(cartItem.getOption())
                 .itemQuantity(addOrderItemRequest.itemQuantity())
-                .totalPrice(getTotalPrice(option, addOrderItemRequest)).build();
+                .totalPrice(getTotalPrice(cartItem.getOption(), addOrderItemRequest)).build();
 
         orderItemRepository.save(orderItem);
     }
@@ -62,6 +66,27 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
+    public List<FindOrderItemResponse> findAllByOrderIdForAdmin(final UUID orderId) {
+        final Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
+
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+        List<FindOrderItemResponse> orderItemResponses = FindOrderItemResponse.ofList(orderItems);
+
+        return orderItemResponses;
+    }
+
+    public List<OrderItem> findOrderItems(final Orders order) {
+        final List<OrderItem> orderItems = orderItemRepository.findAllByOrder(order);
+        return orderItems;
+    }
+
+    public List<OrderItem> findOrderItemsWithPessimisticWriteLock(final Orders order) {
+        final List<OrderItem> orderItems = orderItemRepository.findAllByOrderWithPessimisticWriteLock(order);
+        return orderItems;
+    }
+
+    @Override
     @Transactional
     public void updateOrderItem(Long orderItemId, ModifyOrderItemRequest modifyOrderItemRequest, Member member) {
 
@@ -69,7 +94,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @Transactional
-    public void removeAllByOrderItem(final Orders order) {
+    public void removeAllByOrder(final Orders order) {
         orderItemRepository.removeAllByOrder(order);
     }
 }
