@@ -15,6 +15,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE LOWER(i.itemName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Item> findListByItemNameIgnoreCase(String keyword, Pageable pageable);
 
+
     @Query("SELECT it FROM Item it JOIN FETCH it.image i")
     List<Item> findAllItems(Pageable pageable);
 }
