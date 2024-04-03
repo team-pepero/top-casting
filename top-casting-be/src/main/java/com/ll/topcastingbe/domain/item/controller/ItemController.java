@@ -41,7 +41,6 @@ public class ItemController {
         log.info("itemRequestDto={}", itemRequestDto);
         log.info("itemColors={}", itemRequestDto.getItemColors());
 
-        //Todo:이미지 업로드 기능 구현
         Long itemId = itemService.saveItem(itemRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(itemId);
     }
