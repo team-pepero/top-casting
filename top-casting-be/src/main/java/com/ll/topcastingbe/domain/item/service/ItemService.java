@@ -4,6 +4,9 @@ import com.ll.topcastingbe.domain.category.entity.SubCategory;
 import com.ll.topcastingbe.domain.category.exception.CategoryErrorMessage;
 import com.ll.topcastingbe.domain.category.exception.CategoryNotExistException;
 import com.ll.topcastingbe.domain.category.repository.SubCategoryRepository;
+import com.ll.topcastingbe.domain.image.entity.DetailedImage;
+import com.ll.topcastingbe.domain.image.entity.Image;
+import com.ll.topcastingbe.domain.image.service.ImageService;
 import com.ll.topcastingbe.domain.item.dto.request.ItemCreateRequestDto;
 import com.ll.topcastingbe.domain.item.dto.response.ItemDetailResponseDto;
 import com.ll.topcastingbe.domain.item.entity.Item;
@@ -27,6 +30,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final OptionRepository optionRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final ImageService imageService;
 
     public ItemDetailResponseDto findItem(Long itemId) {
         Item item = itemRepository.findByItemIdWithImageAndOption(itemId)
@@ -41,6 +45,7 @@ public class ItemService {
 
     }
 
+    @Transactional
     public Long saveItem(ItemCreateRequestDto itemRequestDto) {
 
         //요청된 카테고리가 있는지 검증
@@ -48,13 +53,16 @@ public class ItemService {
                         itemRequestDto.getMainCategoryId(), itemRequestDto.getSubCategoryId())
                 .orElseThrow(() -> new CategoryNotExistException(CategoryErrorMessage.CATEGORY_NOT_EXIST));
 
+        Image image = imageService.uploadImage(itemRequestDto.getItemName(), itemRequestDto.getItemImage());
+        DetailedImage detailedImage = imageService.uploadDetailedImage(itemRequestDto.getItemName(),
+                itemRequestDto.getItemDetailedImage());
+
         //아이템 엔티티 생성
-        //Todo: 이미지 업로드 기능 구현
         Item item = Item.builder()
                 .itemName(itemRequestDto.getItemName())
                 .itemPrice(itemRequestDto.getItemPrice())
-                .image(null)
-                .detailedImage(null)
+                .image(image)
+                .detailedImage(detailedImage)
                 .mainCategory(subCategory.getParentCategory())
                 .subCategory(subCategory)
                 .build();
