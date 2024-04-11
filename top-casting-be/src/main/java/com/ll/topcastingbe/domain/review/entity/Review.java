@@ -3,8 +3,8 @@ package com.ll.topcastingbe.domain.review.entity;
 import static jakarta.persistence.FetchType.LAZY;
 
 import com.ll.topcastingbe.domain.image.entity.ReviewImage;
-import com.ll.topcastingbe.domain.item.entity.Item;
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.order.entity.OrderItem;
 import com.ll.topcastingbe.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,9 +31,9 @@ public class Review extends BaseEntity {
     private Member writer;
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id")
-    private Item item;
+    private OrderItem orderItem;
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "reviewimage_id")
+    @JoinColumn(name = "review image_id")
     private ReviewImage image;
     private String title;
     private String content;

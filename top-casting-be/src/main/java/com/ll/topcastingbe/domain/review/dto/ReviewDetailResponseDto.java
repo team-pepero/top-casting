@@ -22,7 +22,7 @@ public class ReviewDetailResponseDto {
     public ReviewDetailResponseDto(Review review) {
         this.id = review.getId();
         this.writer = review.getWriter().getUsername();
-        this.item = review.getItem().getItemName();
+        this.item = review.getOrderItem().getItemName();
         this.image = Optional.ofNullable(review.getImage())
                              .map(ReviewImage::getPath)
                              .orElse(null);
