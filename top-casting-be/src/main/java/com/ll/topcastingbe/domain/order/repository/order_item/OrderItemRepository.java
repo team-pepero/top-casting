@@ -16,4 +16,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     List<OrderItem> findAllByOrderWithPessimisticWriteLock(final Orders order);
 
     void removeAllByOrder(final Orders order);
+
+    List<OrderItem> findByOrder(Orders orders);
+
+
 }
