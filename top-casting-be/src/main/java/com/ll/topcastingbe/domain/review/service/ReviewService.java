@@ -57,7 +57,7 @@ public class ReviewService {
 
     //Item 이름으로 리뷰 추가
     @Transactional
-    public ReviewDetailResponseDto addNormalReview(String itemName, String username, UUID orderId,
+    public ReviewDetailResponseDto addNormalReview(String itemName, Member member, UUID orderId,
                                                    AddNormalReviewRequestDto addNormalReviewRequestDto) {
 
         Orders orders = orderRepository.findById(orderId)
@@ -68,11 +68,9 @@ public class ReviewService {
                                           .findFirst()
                                           .orElseThrow(
                                                   () -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
-
-        Member findMember = memberRepository.findByUsername(username);
-
+        
         Review review = Review.builder()
-                                .writer(findMember)
+                                .writer(member)
                                 .orderItem(findOrderItem)
                                 .image(null)
                                 .title(addNormalReviewRequestDto.getTitle())
@@ -143,9 +141,9 @@ public class ReviewService {
                                           .orElseThrow(
                                                   () -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
 
-        Long l = reviewRepository.countReviewsByOrderItem(findOrderItem);
+        Long reviewCount = reviewRepository.countReviewsByOrderItem(findOrderItem);
 
-        if (l >= 1) {
+        if (reviewCount >= 1) {
             throw new DuplicateReviewException();
         }
     }
