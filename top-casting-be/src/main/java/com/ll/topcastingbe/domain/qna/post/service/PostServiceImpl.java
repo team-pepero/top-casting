@@ -2,6 +2,8 @@ package com.ll.topcastingbe.domain.qna.post.service;
 
 
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.order.exception.BusinessException;
+import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
 import com.ll.topcastingbe.domain.qna.post.dto.request.CreatePostRequest;
 import com.ll.topcastingbe.domain.qna.post.dto.request.ModifyPostRequest;
 import com.ll.topcastingbe.domain.qna.post.dto.response.FindPostResponse;
@@ -18,14 +20,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Long createPost(final CreatePostRequest createPostRequest, final Member member) {
-        Post post = createPostRequest.toPost(member);
+        final Post post = createPostRequest.toPost(member);
         postRepository.save(post);
         return post.getId();
     }
 
     @Override
-    public FindPostResponse findPost(Long postId, Member member) {
-        return null;
+    public FindPostResponse findPost(final Long postId, final Member member) {
+        final Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorMessage.ENTITY_NOT_FOUND));
+        final FindPostResponse findPostResponse = FindPostResponse.of(post);
+        return findPostResponse;
     }
 
     @Override
