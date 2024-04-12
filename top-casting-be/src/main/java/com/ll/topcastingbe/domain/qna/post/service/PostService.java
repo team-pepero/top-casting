@@ -11,7 +11,7 @@ public interface PostService {
 
     FindPostResponse findPost(final Long postId, final Member member);
 
-    Long modifyPost(final Long postId, final ModifyPostRequest modifyPostRequest, final Member member);
+    void modifyPost(final Long postId, final ModifyPostRequest modifyPostRequest, final Member member);
 
     void removePost(final Long postId, final Member member);
 

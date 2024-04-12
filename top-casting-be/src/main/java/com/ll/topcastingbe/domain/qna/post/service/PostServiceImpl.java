@@ -12,13 +12,16 @@ import com.ll.topcastingbe.domain.qna.post.repository.PostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
 
     @Override
+    @Transactional
     public Long createPost(final CreatePostRequest createPostRequest, final Member member) {
         final Post post = createPostRequest.toPost(member);
         postRepository.save(post);
@@ -34,11 +37,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long modifyPost(Long postId, ModifyPostRequest modifyPostRequest, Member member) {
-        return null;
+    @Transactional
+    public void modifyPost(final Long postId,
+                           final ModifyPostRequest modifyPostRequest,
+                           final Member member) {
+        final Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorMessage.ENTITY_NOT_FOUND));
+        post.checkAuthorizedMember(member);
+        post.modifyPost(modifyPostRequest);
     }
 
     @Override
+    @Transactional
     public void removePost(Long postId, Member member) {
 
     }
