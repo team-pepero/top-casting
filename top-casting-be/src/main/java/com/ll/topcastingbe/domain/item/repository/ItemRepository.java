@@ -14,7 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     //list -> dto -> slice
     @Query("SELECT i FROM Item i " +
-            "WHERE LOWER(i.itemName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+                   "WHERE LOWER(i.itemName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Item> findListByItemNameIgnoreCase(String keyword, Pageable pageable);
 
     @Query("SELECT it FROM Item it JOIN FETCH it.image i")
@@ -29,4 +29,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("SELECT it FROM Item it JOIN FETCH it.image i WHERE it.subCategory.id = :subCategoryId")
     List<Item> findAllItemsBySubCategory(@Param("subCategoryId") Long subCategoryId,
                                          Pageable pageable);
+
+    Optional<Item> findByItemName(String itemName);
 }
