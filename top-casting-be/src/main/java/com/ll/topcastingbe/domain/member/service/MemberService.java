@@ -118,4 +118,12 @@ public class MemberService {
                 requestDto.getBirthDate());
         findMember.grantRole();
     }
+
+    public boolean verifyUsername(String username) {
+        return memberRepository.existsByUsername(username);
+    }
+
+    public boolean verifyNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
 }
