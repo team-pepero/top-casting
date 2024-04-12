@@ -50,7 +50,10 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void removePost(Long postId, Member member) {
-
+        final Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ErrorMessage.ENTITY_NOT_FOUND));
+        post.checkAuthorizedMember(member);
+        postRepository.delete(post);
     }
 
     @Override
