@@ -1,5 +1,6 @@
 package com.ll.topcastingbe.domain.review.controller;
 
+import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.exception.UserAndWriterNotMatchException;
 import com.ll.topcastingbe.domain.member.service.MemberService;
 import com.ll.topcastingbe.domain.review.dto.AddNormalReviewRequestDto;
@@ -7,11 +8,13 @@ import com.ll.topcastingbe.domain.review.dto.ModifyReviewRequestDto;
 import com.ll.topcastingbe.domain.review.dto.ReviewDetailResponseDto;
 import com.ll.topcastingbe.domain.review.dto.ReviewListResponseDto;
 import com.ll.topcastingbe.domain.review.service.ReviewService;
+import com.ll.topcastingbe.global.security.auth.PrincipalDetails;
 import java.security.Principal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,10 +59,11 @@ public class ReviewController {
     @PostMapping("orders/{orderId}/items/{itemName}/review")
     public ResponseEntity<ReviewDetailResponseDto> reviewAdd(@PathVariable String itemName,
                                                              @PathVariable UUID orderId,
-                                                             Principal principal,
+                                                             @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                              @RequestBody AddNormalReviewRequestDto addNormalReviewRequestDto) {
+        Member member = principalDetails.getMember();
         return ResponseEntity.ok()
-                       .body(reviewService.addNormalReview(itemName, principal.getName(), orderId,
+                       .body(reviewService.addNormalReview(itemName, member, orderId,
                                addNormalReviewRequestDto));
     }
 
