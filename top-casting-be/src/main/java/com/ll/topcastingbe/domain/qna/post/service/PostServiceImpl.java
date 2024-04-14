@@ -58,6 +58,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<FindPostResponse> findAllPost() {
-        return null;
+        final List<Post> postList = postRepository.findAll();
+        List<FindPostResponse> findPostResponse = FindPostResponse.ofList(postList);
+        return findPostResponse;
     }
 }
