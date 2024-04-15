@@ -9,7 +9,7 @@ import java.util.List;
 public interface PostService {
     Long createPost(final CreatePostRequest createPostRequest, final Member member);
 
-    FindPostResponse findPost(final Long postId, final Member member);
+    FindPostResponse findPost(final Long postId);
 
     void modifyPost(final Long postId, final ModifyPostRequest modifyPostRequest, final Member member);
 

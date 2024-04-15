@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public FindPostResponse findPost(final Long postId, final Member member) {
+    public FindPostResponse findPost(final Long postId) {
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ErrorMessage.ENTITY_NOT_FOUND));
         final FindPostResponse findPostResponse = FindPostResponse.of(post);
