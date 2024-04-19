@@ -1,9 +1,9 @@
-package com.ll.topcastingbe.domain.qna.post.entity;
+package com.ll.topcastingbe.domain.notice.notice.entity;
 
 import com.ll.topcastingbe.domain.member.entity.Member;
+import com.ll.topcastingbe.domain.notice.notice.dto.request.ModifyNoticeRequest;
 import com.ll.topcastingbe.domain.order.exception.AuthException;
 import com.ll.topcastingbe.domain.order.exception.ErrorMessage;
-import com.ll.topcastingbe.domain.qna.post.dto.request.ModifyPostRequest;
 import com.ll.topcastingbe.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,7 +24,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false)
-public class Post extends BaseEntity {
+public class Notice extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,9 +36,9 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    public void modifyPost(final ModifyPostRequest modifyPostRequest) {
-        this.title = modifyPostRequest.title();
-        this.content = modifyPostRequest.content();
+    public void modifyNotice(final ModifyNoticeRequest modifyNoticeRequest) {
+        this.title = modifyNoticeRequest.title();
+        this.content = modifyNoticeRequest.content();
     }
 
     public void checkAuthorizedMember(final Member member) {
