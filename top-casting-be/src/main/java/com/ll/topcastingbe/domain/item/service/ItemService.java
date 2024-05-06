@@ -116,7 +116,7 @@ public class ItemService {
         if (updateDto.hasDetailedImage()){
             DetailedImage newDetailedImage = imageService.uploadDetailedImage(item.getItemName(),
                     updateDto.getItemDetailedImage());
-            imageService.deleteDetailedImage(detailedImage);
+            imageService.deleteImage(detailedImage);
             detailedImage = newDetailedImage;
         }
 

@@ -1,5 +1,6 @@
 package com.ll.topcastingbe.domain.image.entity;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,19 +10,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@DiscriminatorValue("REVIEW")
 @Getter
-public class ReviewImage {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ReviewImage extends Image{
 
-    private String path; // S3경로 또는 로컬 파일 경로
-    private String imageName; //UUID + originFileName
-    private String originFileName;
-    private LocalDateTime createdDate;
+    public ReviewImage() {
+    }
+
+    @Builder
+    public ReviewImage(Long id, String path, String imageName, String fullName, LocalDateTime createdDate) {
+        super(id, path, imageName, fullName, createdDate);
+    }
 }
