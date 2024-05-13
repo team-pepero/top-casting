@@ -1,10 +1,14 @@
 package com.ll.topcastingbe.domain.item.controller;
 
 import com.ll.topcastingbe.domain.item.dto.request.ItemCreateRequestDto;
+import com.ll.topcastingbe.domain.item.dto.request.ItemImageUpdateRequestDto;
+import com.ll.topcastingbe.domain.item.dto.request.ItemNameUpdateRequestDto;
+import com.ll.topcastingbe.domain.item.dto.request.ItemPriceUpdateRequestDto;
 import com.ll.topcastingbe.domain.item.dto.response.ItemDetailResponseDto;
 import com.ll.topcastingbe.domain.item.search.dto.SearchItemDto;
 import com.ll.topcastingbe.domain.item.search.service.ItemSearchService;
 import com.ll.topcastingbe.domain.item.service.ItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +41,7 @@ public class ItemController {
 
     @PreAuthorize("hasRole('ADMIN')") //상품 추가는 관리자만 가능
     @PostMapping
-    public ResponseEntity<?> itemAdd(@RequestBody ItemCreateRequestDto itemRequestDto) {
+    public ResponseEntity<?> itemAdd(@RequestBody @Valid ItemCreateRequestDto itemRequestDto) {
 
         log.info("itemRequestDto={}", itemRequestDto);
         log.info("itemColors={}", itemRequestDto.getItemColors());
@@ -84,4 +89,36 @@ public class ItemController {
         Slice<SearchItemDto> subCategoryItem = itemSearchService.getItemsBySubcategory(pageable, id);
         return ResponseEntity.ok().body(subCategoryItem);
     }
+
+    @PreAuthorize("hasRole('ADMIN')") //아이템 이름 변경은 관리자만 가능
+    @PatchMapping("/{itemId}/itemName")
+    public ResponseEntity<?> itemNameModify(@PathVariable Long itemId,
+                                            @RequestBody @Valid ItemNameUpdateRequestDto updateDto) {
+        itemService.modifyItemName(itemId, updateDto);
+        return ResponseEntity.ok(null);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')") //아이템 이름 변경은 관리자만 가능
+    @PatchMapping("/{itemId}/itemPrice")
+    public ResponseEntity<?> itemPriceModify(@PathVariable Long itemId,
+                                             @RequestBody @Valid ItemPriceUpdateRequestDto updateDto) {
+        itemService.modifyItemPrice(itemId, updateDto);
+        return ResponseEntity.ok(null);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')") //아이템 이미지 변경은 관리자만 가능
+    @PatchMapping("/{itemId}/itemImage")
+    public ResponseEntity<?> itemImageModify(@PathVariable Long itemId,
+                                             @RequestBody ItemImageUpdateRequestDto updateDto) {
+
+        //Todo: Exception 고민해보기
+        //이미지와 상세이미지 모두 없다면 예외처리
+        if (!updateDto.hasImage() && !updateDto.hasDetailedImage()) {
+            throw new IllegalArgumentException();
+        }
+
+        itemService.modifyItemImage(itemId, updateDto);
+        return ResponseEntity.ok(null);
+    }
+
 }

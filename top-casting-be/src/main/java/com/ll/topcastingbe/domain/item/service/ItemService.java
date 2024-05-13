@@ -8,6 +8,9 @@ import com.ll.topcastingbe.domain.image.entity.DetailedImage;
 import com.ll.topcastingbe.domain.image.entity.Image;
 import com.ll.topcastingbe.domain.image.service.ImageService;
 import com.ll.topcastingbe.domain.item.dto.request.ItemCreateRequestDto;
+import com.ll.topcastingbe.domain.item.dto.request.ItemImageUpdateRequestDto;
+import com.ll.topcastingbe.domain.item.dto.request.ItemNameUpdateRequestDto;
+import com.ll.topcastingbe.domain.item.dto.request.ItemPriceUpdateRequestDto;
 import com.ll.topcastingbe.domain.item.dto.response.ItemDetailResponseDto;
 import com.ll.topcastingbe.domain.item.entity.Item;
 import com.ll.topcastingbe.domain.item.exception.ItemNotExistException;
@@ -78,5 +81,45 @@ public class ItemService {
                 );
 
         return createdItem.getId();
+    }
+
+    @Transactional
+    public void modifyItemName(Long itemId, ItemNameUpdateRequestDto updateDto) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(ItemNotExistException::new);
+
+        item.changeItemName(updateDto.getItemName());
+    }
+
+    @Transactional
+    public void modifyItemPrice(Long itemId, ItemPriceUpdateRequestDto updateDto) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(ItemNotExistException::new);
+
+        item.changeItemPrice(updateDto.getItemPrice());
+    }
+
+    @Transactional
+    public void modifyItemImage(Long itemId, ItemImageUpdateRequestDto updateDto) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(ItemNotExistException::new);
+
+        Image image = item.getImage();
+        DetailedImage detailedImage = item.getDetailedImage();
+
+        if (updateDto.hasImage()){
+            Image newImage = imageService.uploadImage(item.getItemName(), updateDto.getItemImage());
+            imageService.deleteImage(image);
+            image = newImage;
+        }
+
+        if (updateDto.hasDetailedImage()){
+            DetailedImage newDetailedImage = imageService.uploadDetailedImage(item.getItemName(),
+                    updateDto.getItemDetailedImage());
+            imageService.deleteDetailedImage(detailedImage);
+            detailedImage = newDetailedImage;
+        }
+
+        item.changeImage(image,detailedImage);
     }
 }
