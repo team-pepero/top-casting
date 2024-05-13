@@ -1,6 +1,5 @@
 package com.ll.topcastingbe.domain.member.controller;
 
-import com.ll.topcastingbe.domain.cart.dto.CartItemListResponseDto;
 import com.ll.topcastingbe.domain.member.dto.MemberDetailsResponseDto;
 import com.ll.topcastingbe.domain.member.dto.MemberModifyRequestDto;
 import com.ll.topcastingbe.domain.member.exception.PasswordAndPasswordCheckNotMatchException;
@@ -9,15 +8,14 @@ import com.ll.topcastingbe.global.security.auth.PrincipalDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +31,7 @@ public class MemberDetailController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{memberId}")
     public ResponseEntity<?> memberDetails(@AuthenticationPrincipal PrincipalDetails principal,
-                                                 @PathVariable Long memberId) {
+                                           @PathVariable Long memberId) {
         return ResponseEntity.ok(MemberDetailsResponseDto.toDto(principal.getMember()));
     }
 
@@ -67,5 +65,25 @@ public class MemberDetailController {
                                           @PathVariable Long memberId) {
         memberService.removeMember(principal.getMember().getId());
         return ResponseEntity.ok(null);
+    }
+
+    //username 검증
+    @GetMapping("/username/availability/{username}")
+    public ResponseEntity<?> usernameVerify(@PathVariable String username) {
+        if (memberService.verifyUsername(username)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                           .body("이미 존재하는 아이디입니다.");
+        }
+        return ResponseEntity.ok("사용가능한 아이디입니다.");
+    }
+
+    //nickname 검증
+    @GetMapping("/nickname/availability/{nickname}")
+    public ResponseEntity<?> nicknameVerify(@PathVariable String nickname) {
+        if (memberService.verifyNickname(nickname)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                           .body("이미 존재하는 닉네임입니다.");
+        }
+        return ResponseEntity.ok("사용가능한 닉네임입니다.");
     }
 }
