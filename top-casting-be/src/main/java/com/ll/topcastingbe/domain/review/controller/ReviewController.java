@@ -108,14 +108,12 @@ public class ReviewController {
 
     //    제미나이
     @GetMapping("/items/{itemId}/review/summary")
-    public ResponseEntity ItemReviewSummary(@PathVariable Long itemId) {
-        //TODO 추후 제미나이 요약 기능 추가 예정
-        reviewService.makeReviewSummary();
-        return null;
+    public ResponseEntity<?> ItemReviewSummary(@PathVariable Long itemId) {
+        return ResponseEntity.ok(reviewService.makeReviewSummary(itemId));
     }
 
     @GetMapping("/orders/{orderId}/items/{itemName}/review")
-    public ResponseEntity reviewVerify(@PathVariable String itemName, @PathVariable String orderId) {
+    public ResponseEntity<?> reviewVerify(@PathVariable String itemName, @PathVariable String orderId) {
         UUID uuidOrderId = UUID.fromString(orderId);
         reviewService.verifyReview(itemName, uuidOrderId);
         return ResponseEntity.ok().body("리뷰 검증 완료");

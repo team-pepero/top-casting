@@ -1,6 +1,10 @@
 package com.ll.topcastingbe.domain.review.service;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.topcastingbe.domain.item.entity.Item;
+import com.ll.topcastingbe.domain.item.repository.ItemRepository;
 import com.ll.topcastingbe.domain.member.entity.Member;
 import com.ll.topcastingbe.domain.member.exception.UserNotFoundException;
 import com.ll.topcastingbe.domain.member.repository.MemberRepository;
@@ -21,10 +25,17 @@ import com.ll.topcastingbe.domain.review.repository.ReviewRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -36,6 +47,11 @@ public class ReviewService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final MemberRepository memberRepository;
+    private final RestTemplate restTemplate;
+    private final ItemRepository itemRepository;
+
+    @Value("${gemini.api.key}")
+    private String apiKey;
 
 
     public ReviewListResponseDto findReviewList() {
@@ -68,7 +84,7 @@ public class ReviewService {
                                           .findFirst()
                                           .orElseThrow(
                                                   () -> new EntityNotFoundException(ErrorMessage.ENTITY_NOT_FOUND));
-        
+
         Review review = Review.builder()
                                 .writer(member)
                                 .orderItem(findOrderItem)
@@ -125,8 +141,31 @@ public class ReviewService {
         return new ReviewListResponseDto(reviewRepository.findByWriter(findMember));
     }
 
-    public void makeReviewSummary() {
+    public String makeReviewSummary(Long itemId) {
 
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        String jsonBody = String.format(
+                "{\"contents\":[{\"parts\":[{\"text\":\" %s 해당 리뷰들을 3줄로 요약해줘 (한글로 응답해줘)\"}]}]}",
+                makeReviewQuestion(itemId));
+        HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+        String answer = response.getBody();
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(answer);
+            JsonNode textNode = rootNode.path("candidates").get(0).path("content").path("parts").get(0).path("text");
+            String textContent = textNode.asText();
+            return textContent;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "리뷰 요약을 생성하는 데 실패했습니다.";
+        }
     }
 
     public void verifyReview(String itemName, UUID orderId) {
@@ -147,4 +186,24 @@ public class ReviewService {
             throw new DuplicateReviewException();
         }
     }
+
+    public String makeReviewQuestion(Long itemId) {
+        List<Review> byItemIdOrderByRatingDesc = reviewRepository.findByItemIdOrderByRatingDesc(itemId);
+        Item item = byItemIdOrderByRatingDesc.get(0).getOrderItem().getOption().getItem();
+        String itemName = item.getItemName();
+        String mainCategory = item.getMainCategory().getCategoryName();
+        String subCategory = item.getSubCategory().getSubcategoryName();
+
+        String totalContent = byItemIdOrderByRatingDesc.stream()
+                                      .map(Review::getContent)
+                                      .collect(Collectors.joining("/"));
+
+        String question = "낚시쇼핑몰에서 판매 중인 \'" + itemName + "\'라는 " + mainCategory + "," + subCategory
+                                  + " 카테고리 제품에 대한 사용자 리뷰를 1줄로 자연스럽게 요약해줘."
+                                  + totalContent;
+
+        return question;
+    }
+
+
 }
