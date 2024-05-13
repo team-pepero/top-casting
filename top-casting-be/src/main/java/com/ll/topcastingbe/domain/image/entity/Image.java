@@ -1,6 +1,9 @@
 package com.ll.topcastingbe.domain.image.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -11,13 +14,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "DTYPE")
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 @Getter
-public class Image {
+public abstract class Image {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

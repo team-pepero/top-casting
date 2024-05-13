@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.ll.topcastingbe.domain.image.entity.DetailedImage;
 import com.ll.topcastingbe.domain.image.entity.Image;
-import com.ll.topcastingbe.domain.image.repository.DetailedImageRepository;
+import com.ll.topcastingbe.domain.image.entity.MainImage;
 import com.ll.topcastingbe.domain.image.repository.ImageRepository;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
@@ -28,7 +28,6 @@ public class ImageService {
 
     private final AmazonS3 amazonS3;
     private final ImageRepository imageRepository;
-    private final DetailedImageRepository detailedImageRepository;
 
     @Value("${aws.s3.bucket}")
     private String bucket;
@@ -38,14 +37,14 @@ public class ImageService {
 
         ImageUploadDto imageUploadDto = createImageUploadDto(itemName, base64);
 
-        Image image = Image.builder()
+        MainImage mainImage = MainImage.builder()
                 .path(imageUploadDto.getImageUrl())
                 .imageName(imageUploadDto.getImageName())
                 .fullName(imageUploadDto.getFullName())
                 .createdDate(imageUploadDto.getCreatedDate())
                 .build();
 
-        return imageRepository.save(image);
+        return imageRepository.save(mainImage);
     }
 
     @Transactional
@@ -60,16 +59,13 @@ public class ImageService {
                 .createdDate(imageUploadDto.getCreatedDate())
                 .build();
 
-        return detailedImageRepository.save(detailedImage);
+        return imageRepository.save(detailedImage);
     }
 
     private ImageUploadDto createImageUploadDto(String itemName, String base64) {
 
         byte[] decodedFile = Base64.getMimeDecoder().decode(base64.substring(base64.indexOf(",") + 1));
         String contentType = base64.substring(base64.indexOf(":"), base64.indexOf(";"));
-
-        log.info("decodedFile={}", base64.substring(base64.indexOf(",") + 1));
-        log.info("contentType={}", contentType);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(decodedFile.length);
@@ -94,14 +90,6 @@ public class ImageService {
         amazonS3.deleteObject(bucket, image.getFullName());
 
         imageRepository.delete(image);
-    }
-
-    @Transactional
-    public void deleteDetailedImage(DetailedImage detailedImage) {
-
-        amazonS3.deleteObject(bucket, detailedImage.getFullName());
-
-        detailedImageRepository.delete(detailedImage);
     }
 
     @Getter

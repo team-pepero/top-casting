@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 
 @Entity
-@DiscriminatorValue("DETAILED")
-public class DetailedImage extends Image{
-    public DetailedImage() {
+@DiscriminatorValue("MAIN")
+public class MainImage extends Image{
+    public MainImage() {
     }
 
     @Builder
-    public DetailedImage(Long id, String path, String imageName, String fullName, LocalDateTime createdDate) {
+    public MainImage(Long id, String path, String imageName, String fullName, LocalDateTime createdDate) {
         super(id, path, imageName, fullName, createdDate);
     }
 }
